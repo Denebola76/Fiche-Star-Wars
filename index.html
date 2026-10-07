@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#d8cfb4">
+    <meta name="color-scheme" content="light">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Fiche de Personnage - Star Wars JDR</title>
+    <style>
+        :root {
+            --sw-red-dark: #68211a;   
+            --sw-green-olive: #5a6744; 
+            --sw-blue-accent: #5ba4b3; 
+            --sw-gray-dark: #3a3a3a;   
+            --bg-paper: #f1ebd9;       
+        }
+
+        *, *::before, *::after { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #d8cfb4;
+            color: var(--sw-gray-dark);
+            margin: 0;
+            padding: 10px;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            outline: 2px solid var(--sw-blue-accent);
+        }
+
+        /* BARRE DE MODE DE JEU */
+        .mode-bar {
+            max-width: 950px;
+            margin: 0 auto 15px auto;
+            background: var(--sw-gray-dark);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mode-btn {
+            background: #555;
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            min-height: 38px;
+            touch-action: manipulation;
+        }
+
+        .mode-btn.active {
+            background: var(--sw-blue-accent);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        .sheet-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background-color: var(--bg-paper);
+            padding: 20px;
+            border: 1px solid #bfae8f;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        /* HEADER */
+        .sheet-header {
+            display: grid;
+            grid-template-columns: 1fr 240px;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .identity-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .id-row {
+            display: flex;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #555;
+            text-transform: uppercase;
+            min-height: 32px;
+        }
+
+        .id-row span {
+            width: 110px;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .id-row input, .id-row select {
+            flex: 1;
+            border: none;
+            border-bottom: 1px solid #777;
+            background: transparent;
+            font-size: 16px; /* Evite le zoom auto sur iPhone */
+            font-weight: bold;
+            color: #111;
+            padding: 4px 5px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .spec-selector-container {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            border-bottom: 1px solid #777;
+            padding-bottom: 4px;
+            min-height: 32px;
+        }
+
+        .spec-tag {
+            background: var(--sw-blue-accent);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .spec-tag button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 2px;
+            font-size: 0.9rem;
+            line-height: 1;
+        }
+
+        .btn-add-spec {
+            background: var(--sw-green-olive);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            touch-action: manipulation;
+        }
+
+        .logo-area { text-align: right; }
+        .logo-main { font-family: 'Impact', 'Arial Black', sans-serif; font-size: 1.6rem; line-height: 1; color: #000; letter-spacing: -0.5px; }
+        .logo-sub { font-size: 1.1rem; font-weight: bold; color: #000; margin-top: -2px; }
+        .logo-jdr { font-size: 0.65rem; letter-spacing: 2px; font-weight: bold; margin-top: 2px; }
+
+        .player-input { margin-top: 10px; border-bottom: 1px solid #777; text-align: right; }
+        .player-input input { border: none; background: transparent; text-align: right; font-size: 16px; font-weight: bold; width: 100%; outline: none; }
+        .player-input label { display: block; font-size: 0.6rem; color: #666; text-transform: uppercase; }
+
+        /* STATUS TOP BLOCKS */
+        .status-row { display: grid; grid-template-columns: 1.2fr 2fr 2fr 2fr; gap: 10px; margin-bottom: 20px; }
+        .status-box { background: #fff; border: 2px solid var(--sw-red-dark); position: relative; border-radius: 4px; overflow: hidden; }
+        .status-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 18px;
+            background: var(--sw-red-dark); z-index: 1;
+        }
+        .status-title { position: relative; z-index: 2; color: #fff; text-align: center; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; padding: 2px 0; letter-spacing: 0.5px; }
+        .status-content { display: flex; height: 48px; align-items: center; justify-content: center; }
+        .status-content input { width: 100%; height: 100%; border: none; text-align: center; font-size: 1.5rem; font-weight: bold; outline: none; background: transparent; }
+        .status-split { display: grid; grid-template-columns: 1fr 1fr; height: 100%; width: 100%; }
+        .split-cell { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; position: relative; }
+        .split-cell:first-child { border-right: 1px solid #ccc; }
+        .split-cell input { width: 100%; height: 28px; font-size: 1.2rem; }
+        .split-label { font-size: 0.55rem; font-weight: bold; text-transform: uppercase; width: 100%; text-align: center; padding: 2px 0; background: #eee; color: #444; }
+        .blue-label { background: var(--sw-blue-accent); color: #fff; }
+        .red-label { background: var(--sw-red-dark); color: #fff; }
+
+        /* CARACTÉRISTIQUES */
+        .carac-section { background: var(--sw-red-dark); border-radius: 12px; padding: 8px 10px 12px 10px; margin-bottom: 20px; }
+        .carac-section-title { text-align: center; color: #fff; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+        .carac-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .carac-wrapper { background: var(--sw-green-olive); border-radius: 8px; padding: 6px 2px; display: flex; flex-direction: column; align-items: center; }
+        .carac-circle { width: 48px; height: 48px; background: #fff; border: 2px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .carac-circle input { width: 38px; border: none; background: transparent; text-align: center; font-size: 1.5rem; font-weight: bold; outline: none; }
+        .carac-label { color: #fff; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; margin-top: 4px; text-align: center; }
+        
+        /* LÉGENDE DES RANGS */
+        .legend-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #e8e2cf;
+            border: 1px solid #bfae8f;
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-count { color: var(--sw-gray-dark); font-weight: bold; }
+        
+        /* COMPÉTENCES */
+        .skills-main-header { 
+            background: #000; color: #fff; text-align: center; font-size: 0.75rem; font-weight: bold; 
+            text-transform: uppercase; padding: 6px 10px; letter-spacing: 1px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center; border-radius: 4px;
+        }
+        .filter-controls { display: flex; gap: 6px; }
+        .filter-btn { background: #333; color: #fff; border: 1px solid #777; font-size: 0.65rem; padding: 4px 8px; cursor: pointer; border-radius: 4px; touch-action: manipulation; }
+        .filter-btn.active { background: var(--sw-blue-accent); border-color: #fff; }
+
+        .skills-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .skills-column { display: flex; flex-direction: column; gap: 15px; }
+        .skills-block-title { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid var(--sw-gray-dark); color: #444; padding-bottom: 4px; margin-bottom: 5px; display: flex; }
+        .title-name { flex: 1; }
+        .title-carr { width: 35px; text-align: center; }
+        .title-rangs { width: 125px; text-align: center; }
+        .title-des { width: 50px; text-align: left; padding-left: 5px; }
+
+        .skill-row { display: flex; align-items: center; min-height: 36px; border-bottom: 1px dotted #aaa; font-size: 0.8rem; padding: 2px 0; }
+        .skill-row.hidden { display: none !important; }
+        .skill-name { flex: 1; font-weight: bold; color: #333; display: flex; align-items: center; gap: 4px; overflow: hidden; }
+        .skill-name span { font-weight: normal; color: #666; font-size: 0.7rem; }
+        .skill-career { width: 35px; text-align: center; flex-shrink: 0; display: flex; justify-content: center; }
+        .skill-career input { width: 18px; height: 18px; cursor: pointer; }
+
+        .skill-ranks { width: 125px; display: flex; gap: 4px; justify-content: center; align-items: center; flex-shrink: 0; }
+        .shape-container { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .rank-shape { 
+            width: 20px; height: 20px; background: #fff; border: 1px solid #777; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; font-size: 0.65rem; 
+            font-weight: bold; color: #777; user-select: none; touch-action: manipulation;
+            border-radius: 3px;
+        }
+        .rank-shape.espece { background: var(--sw-green-olive); color: #fff; transform: rotate(45deg); border-color: #3e492f; }
+        .rank-shape.espece span { transform: rotate(-45deg); }
+        .rank-shape.carriere { background: var(--sw-red-dark); color: #fff; border-radius: 2px; border-color: #4a130f; }
+        .rank-shape.specialisation { background: var(--sw-blue-accent); color: #fff; border-radius: 50%; border-color: #3a7d8a; }
+
+        .skill-pool-display { width: 50px; margin-left: 5px; font-size: 1rem; display: flex; gap: 2px; align-items: center; flex-shrink: 0; }
+        .die-g { color: #2ecc71; text-shadow: 1px 1px 0 #000; font-weight: bold; }
+        .die-y { color: #f1c40f; text-shadow: 1px 1px 0 #000; font-weight: bold; }
+
+        /* ARMES & FOOTER */
+        .section-block { margin-top: 20px; }
+        .block-title { background: var(--sw-red-dark); color: #fff; text-align: center; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; padding: 4px 0; letter-spacing: 2px; border-radius: 3px 3px 0 0; }
+        .weapons-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; background: #fff; }
+        .weapons-table th { font-weight: normal; color: #555; text-transform: uppercase; font-size: 0.65rem; border-bottom: 1px solid #999; padding: 6px 4px; }
+        .weapons-table td { border-bottom: 1px dashed #ccc; padding: 2px; }
+        .weapons-table input { width: 100%; border: none; background: transparent; padding: 6px 4px; font-size: 16px; }
+
+        .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .text-box-area { background: #fff; border: 1px solid #ccc; height: 120px; width: 100%; padding: 8px; font-family: inherit; font-size: 16px; resize: vertical; border-top: none; }
+        .inventory-header-inputs { display: flex; justify-content: space-between; background: #eee; padding: 6px 8px; font-size: 0.7rem; font-weight: bold; border: 1px solid #ccc; border-bottom: none; }
+        .inventory-header-inputs input { width: 60px; border: none; border-bottom: 1px solid #777; background: transparent; text-align: center; font-weight: bold; font-size: 16px; }
+
+        /* FOOTER DE GESTION XP */
+        .sheet-footer { 
+            margin-top: 25px; 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 8px;
+            align-items: center; 
+            background: var(--sw-green-olive); 
+            border: 2px solid var(--sw-red-dark); 
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .footer-center-title { color: #fff; text-align: center; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; }
+        .footer-xp-breakdown { color: #f1ebd9; font-size: 0.6rem; text-align: center; font-weight: bold; margin-top: 2px; }
+        
+        .xp-container { 
+            background: #fff; 
+            border: 2px solid var(--sw-red-dark); 
+            min-height: 42px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+            border-radius: 4px;
+        }
+        .xp-container input { 
+            border: none; 
+            text-align: center; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            width: 100%; 
+            outline: none; 
+            background: transparent; 
+            padding: 2px 0;
+        }
+        .xp-container input[readonly] { color: #333; }
+        .xp-container.disp input { color: var(--sw-red-dark); font-size: 1.2rem; }
+        .xp-label { background: var(--sw-gray-dark); color: #fff; font-size: 0.55rem; text-transform: uppercase; text-align: center; padding: 2px 0; font-weight: bold; }
+
+        .reset-btn { display: block; margin: 20px auto 0 auto; background: transparent; color: var(--sw-red-dark); border: 1px solid var(--sw-red-dark); padding: 8px 16px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; border-radius: 4px; }
+        
+        .data-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:15px; }
+        .data-btn { border:1px solid var(--sw-gray-dark); background:var(--bg-paper); color:var(--sw-gray-dark); border-radius:6px; padding:10px 14px; font-size:.75rem; font-weight:bold; cursor:pointer; touch-action: manipulation; }
+
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .modal-box { background: var(--bg-paper); border: 2px solid var(--sw-red-dark); width: 100%; max-width: 400px; padding: 20px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
+        .modal-title { font-weight: bold; font-size: 1rem; color: var(--sw-red-dark); margin-bottom: 12px; text-transform: uppercase; }
+        .modal-select { width: 100%; padding: 8px; font-size: 16px; margin-bottom: 15px; border-radius: 4px; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-btn { padding: 8px 14px; border: none; cursor: pointer; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border-radius: 4px; }
+        .modal-btn.confirm { background: var(--sw-blue-accent); color: #fff; }
+        .modal-btn.cancel { background: #888; color: #fff; }
+
+        /* STYLE EN MODE JEU */
+        body.mode-game .creation-only { display: none !important; }
+        body.mode-game input.creation-lock, 
+        body.mode-game select.creation-lock {
+            pointer-events: none;
+            background: transparent !important;
+            border-bottom-color: transparent !important;
+            opacity: 0.85;
+        }
+        body.mode-game .rank-shape { pointer-events: none; }
+        body.mode-game .skill-career input { pointer-events: none; }
+
+        /* RESPONSIVE MOBILE / IPHONE */
+        @media (max-width:768px) {
+          body { padding: 6px; }
+          .mode-bar { flex-direction:column; gap:8px; align-items:stretch; padding:8px 12px; }
+          .mode-switch { justify-content:center; }
+          .mode-btn { flex: 1; text-align: center; }
+          .sheet-container { padding:12px 10px; }
+          .sheet-header { grid-template-columns:1fr; gap:12px; }
+          .logo-area { text-align:center; }
+          .player-input { text-align:center; margin-top: 5px; }
+          .player-input input { text-align:center; }
+          .status-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+          .carac-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+          .skills-layout, .bottom-grid { grid-template-columns:1fr; gap:12px; }
+          .skill-row { padding: 4px 0; }
+          .skill-name { font-size: 0.75rem; }
+          .skill-ranks { width: 115px; gap: 3px; }
+          .shape-container { width: 20px; height: 20px; }
+          .rank-shape { width: 18px; height: 18px; font-size: 0.6rem; }
+          .title-rangs { width: 115px; }
+          .title-des { width: 40px; }
+          .skill-pool-display { width: 40px; font-size: 0.85rem; }
+          .sheet-footer { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+          .sheet-footer > div:nth-child(4) { grid-column: 1 / -1; order: -1; }
+          .id-row span { width: 90px; font-size: 0.7rem; }
+        }
+
+        /* === COMPATIBILITÉ TACTILE iOS === */
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; touch-action: manipulation; }
+        body {
+            padding-top: max(10px, env(safe-area-inset-top));
+            padding-right: max(10px, env(safe-area-inset-right));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            padding-left: max(10px, env(safe-area-inset-left));
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+        button, .shape-container, .rank-shape, .skill-career, .mode-btn, .filter-btn, .data-btn, .modal-btn {
+            -webkit-user-select: none; user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: manipulation;
+            cursor: pointer;
+        }
+        input, select, textarea { font-size: 16px; touch-action: manipulation; }
+        input:not([type="checkbox"]), textarea { -webkit-appearance: none; appearance: none; border-radius: 0; }
+        .xp-container input, .status-content input, .split-cell input, .carac-circle input { border-radius: 0; }
+        button { font-family: inherit; }
+
+        .mode-btn { min-height: 44px; }
+        .filter-btn { min-height: 36px; padding: 6px 12px; font-size: 0.7rem; }
+        .btn-add-spec { min-height: 36px; padding: 6px 14px; font-size: 0.8rem; }
+        .spec-tag { padding: 2px 2px 2px 10px; font-size: 0.8rem; }
+        .spec-tag button { min-width: 34px; min-height: 34px; font-size: 1.4rem; border-radius: 4px; }
+        .reset-btn { min-height: 44px; padding: 10px 20px; }
+        .data-btn { min-height: 44px; padding: 10px 16px; }
+        .modal-btn { min-height: 44px; padding: 10px 18px; }
+        .modal-select { min-height: 44px; }
+        .id-row input, .id-row select { min-height: 40px; }
+        .modal-overlay {
+            padding-top: max(15px, env(safe-area-inset-top));
+            padding-bottom: max(15px, env(safe-area-inset-bottom));
+            padding-left: max(15px, env(safe-area-inset-left));
+            padding-right: max(15px, env(safe-area-inset-right));
+            -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+        }
+        .skill-career input { width: 24px; height: 24px; }
+        .skill-career { align-self: stretch; align-items: center; }
+        #xp-talents-val { min-height: 32px; font-size: 16px; }
+
+        body.mode-game .shape-container,
+        body.mode-game .skill-career { pointer-events: none; }
+
+        @media (hover: none) {
+            .shape-container:active .rank-shape { filter: brightness(0.8); }
+            .skill-career:active { background: rgba(0,0,0,0.08); }
+            .mode-btn:active, .filter-btn:active, .btn-add-spec:active, .data-btn:active,
+            .reset-btn:active, .modal-btn:active, .spec-tag button:active { opacity: 0.65; }
+        }
+
+        @media (pointer: coarse), (max-width: 768px) {
+            .skill-row { min-height: 44px; }
+            .skill-name { flex-wrap: wrap; min-width: 0; }
+            .skill-career { width: 36px; }
+            .title-carr { width: 36px; }
+            .skill-ranks { width: 148px; gap: 2px; }
+            .title-rangs { width: 148px; }
+            .shape-container { width: 28px; height: 44px; }
+            .rank-shape { width: 22px; height: 22px; font-size: 0.7rem; }
+            .rank-shape.espece { transform: rotate(45deg) scale(0.8); }
+            .title-des { width: 40px; }
+            .skill-pool-display { width: 40px; font-size: 0.85rem; }
+            .status-content { height: 58px; }
+            .split-cell input { height: 38px; }
+            .carac-circle input { width: 100%; height: 100%; }
+            .weapons-table input { padding: 12px 6px; }
+            .inventory-header-inputs input { min-height: 36px; width: 56px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="mode-bar">
+    <span><strong>MODE DE LA FICHE :</strong></span>
+    <div class="mode-switch">
+        <button type="button" class="mode-btn active" id="btn-mode-creation">Création</button>
+        <button type="button" class="mode-btn" id="btn-mode-game">Jeu</button>
+    </div>
+</div>
+
+<div class="sheet-container">
+
+    <!-- HEADER IDENTITÉ -->
+    <div class="sheet-header">
+        <div class="identity-fields">
+            <div class="id-row"><span>Nom :</span><input type="text" id="id-name" class="creation-lock"></div>
+            
+            <div class="id-row">
+                <span>Espèce :</span>
+                <select id="id-species" class="creation-lock">
+                    <option value="">-- Choisir une espèce --</option>
+                    <optgroup label="📘 Confins de l'Empire">
+                        <option value="bothan">Bothan</option>
+                        <option value="droid">Droïde</option>
+                        <option value="gand">Gand</option>
+                        <option value="humain">Humain</option>
+                        <option value="rodian">Rodien</option>
+                        <option value="trandoshan">Trandoshan</option>
+                        <option value="twilek">Twi'lek</option>
+                        <option value="wookiee">Wookiee</option>
+                    </optgroup>
+                    <optgroup label="📕 Ère de la Rébellion">
+                        <option value="duros">Duros</option>
+                        <option value="gran">Gran</option>
+                        <option value="ithorian">Ithorien</option>
+                        <option value="mon_calamari">Mon Calamari</option>
+                        <option value="sullustan">Sullustain</option>
+                    </optgroup>
+                    <optgroup label="📗 Force et Destinée">
+                        <option value="cerean">Céreen</option>
+                        <option value="kel_dor">Kel Dor</option>
+                        <option value="mirialan">Mirialan</option>
+                        <option value="nautolan">Nautolan</option>
+                        <option value="togruta">Togruta</option>
+                        <option value="zabrak">Zabrak</option>
+                    </optgroup>
+                    <optgroup label="📙 Suppléments">
+                        <option value="aqualish">Aqualish</option>
+                        <option value="arcona">Arcona</option>
+                        <option value="arkanian">Arkanien</option>
+                        <option value="chadra_fan">Chadra-Fan</option>
+                        <option value="chevin">Chevin</option>
+                        <option value="chiss">Chiss</option>
+                        <option value="clawdite">Clawdite (Changelin)</option>
+                        <option value="devaronian">Devaronien</option>
+                        <option value="drall">Drall</option>
+                        <option value="gamorrean">Gamorréen</option>
+                        <option value="gungan">Gungan</option>
+                        <option value="hutt">Hutt</option>
+                        <option value="iktotchi">Iktotchi</option>
+                        <option value="klatoonian">Klatooinien</option>
+                        <option value="kubaz">Kubaz</option>
+                        <option value="kyuzo">Kyuzo</option>
+                        <option value="lannik">Lannik</option>
+                        <option value="pantoran">Pantorien</option>
+                        <option value="pauan">Pau'an / Utapaun</option>
+                        <option value="quarren">Quarren</option>
+                        <option value="sathari">Sathari</option>
+                        <option value="selonian">Selonian</option>
+                        <option value="shistavanen">Shistavanen</option>
+                        <option value="toydarian">Toydarien</option>
+                        <option value="verpine">Verpine</option>
+                        <option value="weequay">Weequay</option>
+                        <option value="xexto">Xexto</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="id-row">
+                <span>Carrière :</span>
+                <select id="id-career" class="creation-lock">
+                    <option value="">-- Choisir une carrière --</option>
+                    <optgroup label="📘 Confins de l'Empire">
+                        <option value="chasseur">Chasseur de primes</option>
+                        <option value="colon">Colon</option>
+                        <option value="explorateur">Explorateur</option>
+                        <option value="mercenaire">Mercenaire</option>
+                        <option value="contrebandier">Contrebandier</option>
+                        <option value="technicien">Technicien</option>
+                    </optgroup>
+                    <optgroup label="📕 Ère de la Rébellion">
+                        <option value="as">As</option>
+                        <option value="commandant">Commandant</option>
+                        <option value="diplomate">Diplomate</option>
+                        <option value="ingenieur">Ingénieur</option>
+                        <option value="espion">Espion</option>
+                        <option value="soldat">Soldat</option>
+                    </optgroup>
+                    <optgroup label="📗 Force et Destinée">
+                        <option value="consul">Consul</option>
+                        <option value="gardien">Gardien</option>
+                        <option value="mystique">Mystique</option>
+                        <option value="emissaire">Émissaire</option>
+                        <option value="sentinelle">Sentinelle</option>
+                        <option value="chercheur">Chercheur</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="id-row">
+                <span>Spécialités :</span>
+                <div class="spec-selector-container" id="spec-list-container">
+                    <button type="button" class="btn-add-spec creation-only" id="btn-add-spec">+ Ajouter</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="logo-area">
+            <div class="logo-main">STAR WARS</div>
+            <div class="logo-sub">JEU DE RÔLE</div>
+            <div class="logo-jdr">SYSTEME NARRATIF</div>
+            <div class="player-input">
+                <input type="text" id="id-player" placeholder="Nom du joueur">
+                <label>Joueur/Joueuse</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOCS SUPÉRIEURS -->
+    <div class="status-row">
+        <div class="status-box">
+            <div class="status-title">Encaissement</div>
+            <div class="status-content"><input type="number" id="st-soak" value="0"></div>
+        </div>
+        <div class="status-box">
+            <div class="status-title">Blessures</div>
+            <div class="status-content">
+                <div class="status-split">
+                    <div class="split-cell"><input type="number" id="st-w-thresh" value="0"><div class="split-label">Seuil</div></div>
+                    <div class="split-cell"><input type="number" id="st-w-curr" value="0"><div class="split-label blue-label">Actuelles</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="status-box">
+            <div class="status-title">Stress</div>
+            <div class="status-content">
+                <div class="status-split">
+                    <div class="split-cell"><input type="number" id="st-s-thresh" value="0"><div class="split-label">Seuil</div></div>
+                    <div class="split-cell"><input type="number" id="st-s-curr" value="0"><div class="split-label blue-label">Actuel</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="status-box">
+            <div class="status-title">Défense</div>
+            <div class="status-content">
+                <div class="status-split">
+                    <div class="split-cell"><input type="number" id="st-def-range" value="0"><div class="split-label red-label">Dist.</div></div>
+                    <div class="split-cell"><input type="number" id="st-def-melee" value="0"><div class="split-label blue-label">CàC</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARACTÉRISTIQUES -->
+    <div class="carac-section">
+        <div class="carac-section-title">Caractéristiques</div>
+        <div class="carac-grid">
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-vig" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Vigueur</div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-ag" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Agilité</div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-int" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Intel.</div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-ru" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Ruse</div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-vol" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Volonté</div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-pre" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Présence</div></div>
+        </div>
+    </div>
+    
+    <!-- LÉGENDE DYNAMIQUE -->
+    <div class="legend-bar">
+        <div class="legend-item">
+            <div class="rank-shape espece"><span>E</span></div>
+            <span>Espèce : <span id="count-e" class="legend-count">0 / 0</span></span>
+        </div>
+        <div class="legend-item">
+            <div class="rank-shape carriere"><span>C</span></div>
+            <span>Carrière : <span id="count-c" class="legend-count">0 / 4</span></span>
+        </div>
+        <div class="legend-item">
+            <div class="rank-shape specialisation"><span>S</span></div>
+            <span>Spécialité(s) : <span id="count-s" class="legend-count">0 / 2</span></span>
+        </div>
+    </div>
+
+    <!-- SECTION COMPÉTENCES -->
+    <div class="skills-main-header">
+        <span>Compétences</span>
+        <div class="filter-controls">
+            <button type="button" class="filter-btn active" id="btn-filter-all">Toutes</button>
+            <button type="button" class="filter-btn" id="btn-filter-career">Filtre Carrière</button>
+        </div>
+    </div>
+    
+    <div class="skills-layout">
+        <!-- COLONNE GAUCHE -->
+        <div class="skills-column">
+            <div>
+                <div class="skills-block-title">
+                    <span class="title-name">Compétences Générales</span>
+                    <span class="title-carr">Carr.</span>
+                    <span class="title-rangs">Rangs (E/C/S)</span>
+                    <span class="title-des">Dés</span>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="astrogation">
+                    <div class="skill-name">Astrogation <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="vig" data-id="athletisme">
+                    <div class="skill-name">Athlétisme <span>(Vig)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="pre" data-id="calme">
+                    <div class="skill-name">Calme <span>(Pré)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="pre" data-id="charme">
+                    <div class="skill-name">Charme <span>(Pré)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="vol" data-id="coercition">
+                    <div class="skill-name">Coercition <span>(Vol)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="pre" data-id="commandement">
+                    <div class="skill-name">Commandement <span>(Pré)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ag" data-id="coordination">
+                    <div class="skill-name">Coordination <span>(Ag)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ag" data-id="discretion">
+                    <div class="skill-name">Discrétion <span>(Ag)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="informatique">
+                    <div class="skill-name">Informatique <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ru" data-id="magouilles">
+                    <div class="skill-name">Magouilles <span>(Ru)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="mecanique">
+                    <div class="skill-name">Mécanique <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="medecine">
+                    <div class="skill-name">Médecine <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="pre" data-id="negociation">
+                    <div class="skill-name">Négociation <span>(Pré)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ru" data-id="perception">
+                    <div class="skill-name">Perception <span>(Ru)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ag" data-id="pilotage-espace">
+                    <div class="skill-name">Pilotage (espace) <span>(Ag)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ag" data-id="pilotage-planetaire">
+                    <div class="skill-name">Pilotage (planète) <span>(Ag)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="vig" data-id="resistance">
+                    <div class="skill-name">Résistance <span>(Vig)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="vol" data-id="sang-froid">
+                    <div class="skill-name">Sang-froid <span>(Vol)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ru" data-id="survie">
+                    <div class="skill-name">Survie <span>(Ru)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ru" data-id="systeme-d">
+                    <div class="skill-name">Système D <span>(Ru)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ru" data-id="tromperie">
+                    <div class="skill-name">Tromperie <span>(Ru)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="vol" data-id="vigilance">
+                    <div class="skill-name">Vigilance <span>(Vol)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLONNE DROITE -->
+        <div class="skills-column">
+            <div>
+                <div class="skills-block-title">
+                    <span class="title-name">Compétences de Combat</span>
+                    <span class="title-carr">Carr.</span>
+                    <span class="title-rangs">Rangs (E/C/S)</span>
+                    <span class="title-des">Dés</span>
+                </div>
+
+                <div class="skill-row" data-carac="ag" data-id="artillerie">
+                    <div class="skill-name">Artillerie <span>(Ag)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="vig" data-id="corps-a-corps">
+                    <div class="skill-name">Corps à corps <span>(Vig)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ag" data-id="distance-legeres">
+                    <div class="skill-name">Distance - Légères <span>(Ag)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="ag" data-id="distance-lourdes">
+                    <div class="skill-name">Distance - Lourdes <span>(Ag)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="vig" data-id="pugilat">
+                    <div class="skill-name">Pugilat <span>(Vig)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="vig" data-id="sabre-laser">
+                    <div class="skill-name">Sabre laser <span>(Vig/Spé)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="skills-block-title">
+                    <span class="title-name">Connaissances</span>
+                    <span class="title-carr">Carr.</span>
+                    <span class="title-rangs">Rangs (E/C/S)</span>
+                    <span class="title-des">Dés</span>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="bordure-exterieure">
+                    <div class="skill-name">Bordure Ext. <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="culture">
+                    <div class="skill-name">Culture <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="education">
+                    <div class="skill-name">Éducation <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="guerre">
+                    <div class="skill-name">Guerre <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="lore">
+                    <div class="skill-name">Lore / Savoirs <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="mondes-du-noyau">
+                    <div class="skill-name">Mondes Noyau <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="pegres">
+                    <div class="skill-name">Pègre <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+
+                <div class="skill-row" data-carac="int" data-id="xenologie">
+                    <div class="skill-name">Xénologie <span>(Int)</span></div>
+                    <div class="skill-career"><input type="checkbox"></div>
+                    <div class="skill-ranks" data-score="0">
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
+                    </div>
+                    <div class="skill-pool-display"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOC ARMES -->
+    <div class="section-block">
+        <div class="block-title">Armes</div>
+        <div style="overflow-x: auto;">
+            <table class="weapons-table">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Arme</th>
+                        <th style="width: 20%;">Dégâts</th>
+                        <th style="width: 20%;">Portée</th>
+                        <th style="width: 30%;">Spécial</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" id="w1-n"></td>
+                        <td><input type="text" id="w1-d"></td>
+                        <td><input type="text" id="w1-p"></td>
+                        <td><input type="text" id="w1-sp"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="w2-n"></td>
+                        <td><input type="text" id="w2-d"></td>
+                        <td><input type="text" id="w2-p"></td>
+                        <td><input type="text" id="w2-sp"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- BLOC ÉQUIPEMENT & TALENTS -->
+    <div class="bottom-grid">
+        <div>
+            <div class="block-title">Équipement & Crédits</div>
+            <div class="inventory-header-inputs">
+                <span>Crédits: <input type="text" id="inv-credits" placeholder="0"></span>
+                <span>Encobr.: <input type="number" id="inv-enc-curr" value="0"> / <input type="number" id="inv-enc-max" value="0"></span>
+            </div>
+            <textarea class="text-box-area" id="inv-items" placeholder="Objets & équipement..."></textarea>
+        </div>
+        <div>
+            <div class="block-title" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px;">
+                <span>Talents & Capacités</span>
+                <span style="font-size: 0.65rem; font-weight: normal; text-transform: none;">
+                    XP Talents : <input type="number" id="xp-talents-val" value="0" style="width: 45px; background: #fff; border: 1px solid #777; border-radius: 3px; text-align: center; font-weight: bold; color: #111;">
+                </span>
+            </div>
+            <textarea class="text-box-area" id="talents-list" style="height: 120px;" placeholder="Capacités, talents, pouvoirs..."></textarea>
+        </div>
+    </div>
+
+    <!-- FOOTER DE GESTION DES XP -->
+    <div class="sheet-footer">
+        <div class="xp-container">
+            <input type="number" id="xp-base-val" value="0" readonly>
+            <div class="xp-label">XP Espèce</div>
+        </div>
+        <div class="xp-container">
+            <input type="number" id="xp-bonus-val" value="0">
+            <div class="xp-label">XP Bonus</div>
+        </div>
+        <div class="xp-container">
+            <input type="number" id="xp-tot-val" value="0" readonly>
+            <div class="xp-label">Total XP</div>
+        </div>
+        <div>
+            <div class="footer-center-title">Personnage</div>
+            <div class="footer-xp-breakdown" id="xp-detail-text">Carac: 0 XP | Spé: 0 XP | Comp: 0 XP | Talents: 0 XP</div>
+        </div>
+        <div class="xp-container disp">
+            <input type="number" id="xp-disp-val" value="0" readonly>
+            <div class="xp-label">XP Dispo.</div>
+        </div>
+    </div>
+
+    <button class="reset-btn creation-only" id="btn-clear">Vider la fiche</button>
+    <div class="data-actions creation-only">
+        <button type="button" class="data-btn" id="btn-export">Exporter la fiche</button>
+        <button type="button" class="data-btn" id="btn-import">Importer une fiche</button>
+    </div>
+
+</div>
+
+<!-- MODAL SELECTION SPECIALITE -->
+<div class="modal-overlay" id="specModal">
+    <div class="modal-box">
+        <div class="modal-title">Ajouter une spécialité</div>
+        <select class="modal-select" id="modalSpecSelect"></select>
+        <div class="modal-buttons">
+            <button class="modal-btn cancel" id="btn-spec-cancel">Annuler</button>
+            <button class="modal-btn confirm" id="btn-spec-ok">Ajouter</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="msgModal">
+    <div class="modal-box">
+        <div class="modal-title">Information</div>
+        <div class="dlg-text" style="margin-bottom:12px;font-size:16px;white-space:pre-wrap;"></div>
+        <textarea class="text-box-area" style="display:none;height:160px;margin-bottom:12px;border-top:1px solid #ccc;" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+        <div class="modal-buttons">
+            <button type="button" class="modal-btn cancel dlg-cancel">Fermer</button>
+            <button type="button" class="modal-btn confirm dlg-ok">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentMode = 'creation'; 
+    let currentFilter = 'all';    
+    let selectedSpecs = [];
+    let lastSheetJson = '';
+
+    const DATABASE = {
+        species: {
+            "humain":        { vig: 2, ag: 2, int: 2, ru: 2, vol: 2, pre: 2, wThresh: 10, sThresh: 10, baseXp: 110, freeRanks: 2 },
+            "bothan":        { vig: 1, ag: 2, int: 2, ru: 3, vol: 2, pre: 2, wThresh: 10, sThresh: 11, baseXp: 100, freeRanks: 1 },
+            "droid":         { vig: 1, ag: 1, int: 1, ru: 1, vol: 1, pre: 1, wThresh: 10, sThresh: 10, baseXp: 175, freeRanks: 0 },
+            "gand":          { vig: 2, ag: 2, int: 2, ru: 2, vol: 3, pre: 1, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "rodian":        { vig: 2, ag: 3, int: 2, ru: 2, vol: 1, pre: 2, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "trandoshan":    { vig: 3, ag: 1, int: 2, ru: 2, vol: 2, pre: 2, wThresh: 12, sThresh: 9,  baseXp: 90, freeRanks: 1  },
+            "twilek":        { vig: 1, ag: 2, int: 2, ru: 2, vol: 2, pre: 3, wThresh: 10, sThresh: 11, baseXp: 100, freeRanks: 1 },
+            "wookiee":       { vig: 3, ag: 2, int: 2, ru: 2, vol: 1, pre: 1, wThresh: 14, sThresh: 9,  baseXp: 90, freeRanks: 1  },
+            "duros":         { vig: 1, ag: 2, int: 3, ru: 2, vol: 2, pre: 2, wThresh: 11, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "gran":          { vig: 2, ag: 2, int: 2, ru: 1, vol: 2, pre: 3, wThresh: 10, sThresh: 9,  baseXp: 100, freeRanks: 1 },
+            "ithorian":      { vig: 2, ag: 1, int: 2, ru: 2, vol: 3, pre: 2, wThresh: 13, sThresh: 11, baseXp: 90, freeRanks: 1  },
+            "mon_calamari":  { vig: 2, ag: 2, int: 3, ru: 2, vol: 2, pre: 1, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "sullustan":     { vig: 1, ag: 3, int: 2, ru: 2, vol: 2, pre: 2, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "cerean":        { vig: 2, ag: 1, int: 3, ru: 2, vol: 2, pre: 2, wThresh: 10, sThresh: 11, baseXp: 90, freeRanks: 1  },
+            "kel_dor":       { vig: 1, ag: 2, int: 2, ru: 2, vol: 2, pre: 3, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "mirialan":      { vig: 2, ag: 3, int: 2, ru: 2, vol: 2, pre: 1, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "nautolan":      { vig: 3, ag: 2, int: 2, ru: 2, vol: 1, pre: 2, wThresh: 11, sThresh: 9,  baseXp: 100, freeRanks: 1 },
+            "togruta":       { vig: 1, ag: 2, int: 2, ru: 3, vol: 2, pre: 2, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "zabrak":        { vig: 2, ag: 2, int: 2, ru: 2, vol: 3, pre: 1, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "aqualish":      { vig: 3, ag: 2, int: 1, ru: 2, vol: 2, pre: 2, wThresh: 11, sThresh: 8,  baseXp: 90, freeRanks: 1  },
+            "arcona":        { vig: 2, ag: 2, int: 2, ru: 2, vol: 3, pre: 1, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "arkanian":      { vig: 2, ag: 2, int: 3, ru: 2, vol: 2, pre: 1, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "chadra_fan":    { vig: 1, ag: 3, int: 2, ru: 2, vol: 2, pre: 2, wThresh: 9,  sThresh: 11, baseXp: 90, freeRanks: 1  },
+            "chevin":        { vig: 3, ag: 1, int: 2, ru: 3, vol: 1, pre: 2, wThresh: 11, sThresh: 11, baseXp: 80, freeRanks: 1  },
+            "chiss":         { vig: 2, ag: 2, int: 3, ru: 2, vol: 2, pre: 1, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "clawdite":      { vig: 2, ag: 2, int: 2, ru: 3, vol: 2, pre: 1, wThresh: 10, sThresh: 10, baseXp: 90, freeRanks: 1  },
+            "devaronian":    { vig: 2, ag: 2, int: 2, ru: 3, vol: 2, pre: 1, wThresh: 11, sThresh: 10, baseXp: 90, freeRanks: 1  },
+            "drall":         { vig: 1, ag: 1, int: 4, ru: 2, vol: 2, pre: 2, wThresh: 8,  sThresh: 10, baseXp: 90, freeRanks: 1  },
+            "gamorrean":     { vig: 3, ag: 2, int: 1, ru: 2, vol: 2, pre: 1, wThresh: 12, sThresh: 9,  baseXp: 90, freeRanks: 1  },
+            "gungan":        { vig: 2, ag: 2, int: 2, ru: 2, vol: 2, pre: 2, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "hutt":          { vig: 3, ag: 1, int: 2, ru: 2, vol: 3, pre: 1, wThresh: 15, sThresh: 13, baseXp: 70, freeRanks: 1  },
+            "iktotchi":      { vig: 2, ag: 2, int: 2, ru: 2, vol: 3, pre: 1, wThresh: 10, sThresh: 10, baseXp: 90, freeRanks: 1  },
+            "klatoonian":    { vig: 2, ag: 2, int: 2, ru: 2, vol: 2, pre: 2, wThresh: 11, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "kubaz":         { vig: 1, ag: 2, int: 2, ru: 3, vol: 2, pre: 2, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "kyuzo":         { vig: 2, ag: 3, int: 2, ru: 2, vol: 2, pre: 1, wThresh: 11, sThresh: 10, baseXp: 90, freeRanks: 1  },
+            "lannik":        { vig: 2, ag: 2, int: 2, ru: 2, vol: 3, pre: 1, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "pantoran":      { vig: 2, ag: 2, int: 2, ru: 2, vol: 2, pre: 3, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "pauan":         { vig: 2, ag: 1, int: 3, ru: 2, vol: 2, pre: 2, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "quarren":       { vig: 2, ag: 2, int: 2, ru: 2, vol: 2, pre: 2, wThresh: 11, sThresh: 9,  baseXp: 100, freeRanks: 1 },
+            "sathari":       { vig: 1, ag: 3, int: 2, ru: 2, vol: 2, pre: 2, wThresh: 9,  sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "selonian":      { vig: 2, ag: 3, int: 2, ru: 2, vol: 2, pre: 1, wThresh: 11, sThresh: 9,  baseXp: 80, freeRanks: 1 },
+            "shistavanen":   { vig: 2, ag: 3, int: 2, ru: 2, vol: 2, pre: 1, wThresh: 10, sThresh: 10, baseXp: 100, freeRanks: 1 },
+            "toydarian":     { vig: 1, ag: 2, int: 2, ru: 2, vol: 3, pre: 2, wThresh: 9,  sThresh: 11, baseXp: 90, freeRanks: 1  },
+            "verpine":       { vig: 2, ag: 2, int: 3, ru: 2, vol: 2, pre: 1, wThresh: 10, sThresh: 10, baseXp: 90, freeRanks: 1  },
+            "weequay":       { vig: 3, ag: 2, int: 2, ru: 2, vol: 2, pre: 1, wThresh: 11, sThresh: 9,  baseXp: 90, freeRanks: 1  },
+            "xexto":         { vig: 1, ag: 3, int: 2, ru: 2, vol: 2, pre: 2, wThresh: 9,  sThresh: 10, baseXp: 90, freeRanks: 1  }
+        },
+        careers: {
+            "chasseur": {
+                label: "Chasseur de primes",
+                skills: ["athletisme", "coercition", "perception", "pilotage-planetaire", "survie", "distance-lourdes"],
+                specs: {
+                    "assassin": { label: "Assassin", skills: ["discretion", "corps-a-corps", "distance-legeres", "perception"] },
+                    "gadgeteur": { label: "Gadgeteur", skills: ["mecanique", "coercition", "pugilat", "distance-lourdes"] },
+                    "traqueur": { label: "Traqueur", skills: ["survie", "perception", "bordure-exterieure", "pilotage-espace"] }
+                }
+            },
+            "colon": {
+                label: "Colon",
+                skills: ["calme", "charme", "tromperie", "education", "commandement", "negociation"],
+                specs: {
+                    "toubib": { label: "Toubib", skills: ["medecine", "resistance", "xenologie", "calme"] },
+                    "politicien": { label: "Politicien", skills: ["charme", "coercition", "commandement", "tromperie"] },
+                    "erudit": { label: "Érudit", skills: ["education", "mondes-du-noyau", "bordure-exterieure", "xenologie"] }
+                }
+            },
+            "explorateur": {
+                label: "Explorateur",
+                skills: ["astrogation", "athletisme", "pilotage-espace", "survie", "xenologie", "bordure-exterieure"],
+                specs: {
+                    "arpenteur": { label: "Arpenteur", skills: ["survie", "athletisme", "perception", "resistance"] },
+                    "pilote-ligne": { label: "Pilote de ligne", skills: ["astrogation", "pilotage-espace", "pilotage-planetaire", "mecanique"] },
+                    "archeologue": { label: "Archéologue", skills: ["culture", "education", "perception", "athletisme"] }
+                }
+            },
+            "mercenaire": {
+                label: "Mercenaire",
+                skills: ["athletisme", "coercition", "resistance", "corps-a-corps", "distance-lourdes", "pugilat"],
+                specs: {
+                    "mercenaire-combattant": { label: "Mercenaire / Soldat", skills: ["commandement", "sang-froid", "distance-lourdes", "artillerie"] },
+                    "garde-du-corps": { label: "Garde du corps", skills: ["perception", "vigilance", "pugilat", "distance-legeres"] },
+                    "artilleur": { label: "Artilleur", skills: ["artillerie", "mecanique", "distance-lourdes", "sang-froid"] }
+                }
+            },
+            "contrebandier": {
+                label: "Contrebandier",
+                skills: ["tromperie", "coordination", "pilotage-espace", "magouilles", "systeme-d", "distance-legeres"],
+                specs: {
+                    "pilote": { label: "Pilote", skills: ["astrogation", "pilotage-espace", "pilotage-planetaire", "mecanique"] },
+                    "escroc": { label: "Escroc", skills: ["charme", "tromperie", "magouilles", "negociation"] },
+                    "voleur": { label: "Voleur", skills: ["discretion", "coordination", "perception", "magouilles"] }
+                }
+            },
+            "technicien": {
+                label: "Technicien",
+                skills: ["astrogation", "informatique", "mecanique", "coordination", "bordure-exterieure", "sang-froid"],
+                specs: {
+                    "mecano": { label: "Mécano", skills: ["mecanique", "pilotage-planetaire", "resistance", "informatique"] },
+                    "pirateur": { label: "Pirateur", skills: ["informatique", "tromperie", "magouilles", "education"] },
+                    "bricoleur": { label: "Bricoleur", skills: ["mecanique", "informatique", "systeme-d", "perception"] }
+                }
+            },
+            "as": {
+                label: "As",
+                skills: ["astrogation", "sang-froid", "mecanique", "perception", "pilotage-planetaire", "pilotage-espace", "distance-legeres", "artillerie"],
+                specs: {
+                    "pilote-as": { label: "Pilote", skills: ["astrogation", "pilotage-planetaire", "pilotage-espace", "sang-froid"] },
+                    "conducteur": { label: "Conducteur", skills: ["mecanique", "perception", "pilotage-planetaire", "systeme-d"] },
+                    "artilleur-as": { label: "Artilleur", skills: ["artillerie", "mecanique", "perception", "sang-froid"] }
+                }
+            },
+            "commandant": {
+                label: "Commandant",
+                skills: ["coercition", "calme", "commandement", "perception", "resistance", "vigilance", "education", "guerre"],
+                specs: {
+                    "tacticien": { label: "Tacticien", skills: ["commandement", "calme", "guerre"] },
+                    "officier-tactique": { label: "Officier Tactique", skills: ["coercition", "commandement", "guerre", "vigilance"] },
+                    "meneur": { label: "Meneur d'hommes", skills: ["charme", "commandement", "guerre"] }
+                }
+            },
+            "diplomate": {
+                label: "Diplomate",
+                skills: ["charme", "tromperie", "commandement", "negociation", "calme", "education", "mondes-du-noyau", "culture"],
+                specs: {
+                    "ambassadeur": { label: "Ambassadeur", skills: ["charme", "negociation", "mondes-du-noyau", "calme"] },
+                    "agitateur": { label: "Agitateur", skills: ["coercition", "tromperie", "charme", "magouilles"] },
+                    "analyste": { label: "Analyste", skills: ["informatique", "education", "perception", "mondes-du-noyau"] }
+                }
+            },
+            "ingenieur": {
+                label: "Ingénieur",
+                skills: ["athletisme", "informatique", "mecanique", "perception", "pilotage-espace", "education", "distance-legeres", "artillerie"],
+                specs: {
+                    "mecanicien-de-bord": { label: "Mécanicien de bord", skills: ["mecanique", "pilotage-espace", "calme", "informatique"] },
+                    "saboteur": { label: "Saboteur", skills: ["informatique", "mecanique", "discretion", "systeme-d"] },
+                    "scientifique": { label: "Scientifique", skills: ["informatique", "education", "medecine", "perception"] }
+                }
+            },
+            "espion": {
+                label: "Espion",
+                skills: ["informatique", "tromperie", "discretion", "perception", "vigilance", "magouilles", "distance-legeres", "systeme-d"],
+                specs: {
+                    "agent-d-infiltration": { label: "Infiltrateur", skills: ["discretion", "coordination", "corps-a-corps", "magouilles"] },
+                    "eclaireur": { label: "Éclaireur", skills: ["athletisme", "perception", "survie", "vigilance"] },
+                    "interrogateur": { label: "Interrogateur", skills: ["coercition", "perception", "tromperie", "medecine"] }
+                }
+            },
+            "soldat": {
+                label: "Soldat",
+                skills: ["athletisme", "coercition", "commandement", "calme", "resistance", "vigilance", "distance-legeres", "distance-lourdes"],
+                specs: {
+                    "commando": { label: "Commando", skills: ["athletisme", "discretion", "resistance", "distance-lourdes"] },
+                    "tirateur-d-elite": { label: "Tireur d'élite", skills: ["calme", "perception", "distance-lourdes", "distance-legeres"] },
+                    "medic-de-combat": { label: "Médic de combat", skills: ["medecine", "resistance", "vigilance", "distance-legeres"] }
+                }
+            },
+            "consul": {
+                label: "Consul",
+                skills: ["calme", "charme", "education", "negociation", "lore"],
+                specs: {
+                    "erudit-force": { label: "Érudit", skills: ["education", "lore", "xenologie", "perception"] },
+                    "guerisseur": { label: "Guérisseur", skills: ["medecine", "calme", "xenologie"] },
+                    "mediateur": { label: "Médiateur", skills: ["charme", "coercition", "negociation", "calme"] }
+                }
+            },
+            "gardien": {
+                label: "Gardien",
+                skills: ["athletisme", "calme", "resistance", "vigilance", "sabre-laser"],
+                specs: {
+                    "protecteur": { label: "Protecteur", skills: ["athletisme", "medecine", "vigilance", "sabre-laser"] },
+                    "sentinelle-paix": { label: "Maintien de la paix", skills: ["charme", "commandement", "sabre-laser"] },
+                    "soresu": { label: "Maître du Soresu", skills: ["calme", "sabre-laser"] }
+                }
+            },
+            "mystique": {
+                label: "Mystique",
+                skills: ["coercition", "perception", "survie", "vigilance", "lore"],
+                specs: {
+                    "consulteur": { label: "Conseiller", skills: ["charme", "coercition", "perception"] },
+                    "makashi": { label: "Maître du Makashi", skills: ["tromperie", "calme", "sabre-laser", "charme"] },
+                    "prophete": { label: "Prophète", skills: ["coercition", "vigilance", "lore"] }
+                }
+            },
+            "emissaire": {
+                label: "Émissaire",
+                skills: ["athletisme", "coercition", "coordination", "perception", "pilotage-planetaire", "sabre-laser"],
+                specs: {
+                    "agresseur": { label: "Agresseur", skills: ["coercition", "distance-legeres", "corps-a-corps", "sabre-laser"] },
+                    "shii-cho": { label: "Chevalier Shii-Cho", skills: ["athletisme", "resistance", "corps-a-corps", "sabre-laser"] },
+                    "chasseur-force": { label: "Traqueur de la Force", skills: ["perception", "survie", "vigilance", "sabre-laser"] }
+                }
+            },
+            "sentinelle": {
+                label: "Sentinelle",
+                skills: ["informatique", "tromperie", "perception", "magouilles", "discretion", "systeme-d"],
+                specs: {
+                    "ombre": { label: "Ombre", skills: ["tromperie", "discretion", "magouilles", "sabre-laser"] },
+                    "artisan": { label: "Artisan", skills: ["informatique", "mecanique", "sabre-laser"] },
+                    "investigateur": { label: "Investigateur", skills: ["informatique", "perception", "vigilance", "education"] }
+                }
+            },
+            "chercheur": {
+                label: "Chercheur",
+                skills: ["astrogation", "athletisme", "perception", "pilotage-espace", "survie"],
+                specs: {
+                    "aventurier": { label: "Aventurier", skills: ["athletisme", "survie", "sabre-laser"] },
+                    "hermite": { label: "Hermite", skills: ["survie", "xenologie", "calme"] },
+                    "ataru": { label: "Maître de l'Ataru", skills: ["athletisme", "coordination", "perception", "sabre-laser"] }
+                }
+            }
+        }
+    };
+
+    const shapeStates = [
+        { class: 'none', label: '-' },
+        { class: 'espece', label: 'E' },
+        { class: 'carriere', label: 'C' },
+        { class: 'specialisation', label: 'S' }
+    ];
+
+    function updateLegendCounts() {
+        let countE = 0, countC = 0, countS = 0;
+        document.querySelectorAll('.skill-row .rank-shape').forEach(sh => {
+            if (sh.classList.contains('espece')) countE++;
+            if (sh.classList.contains('carriere')) countC++;
+            if (sh.classList.contains('specialisation')) countS++;
+        });
+
+        let maxE = 0;
+        const speciesSelect = document.getElementById('id-species');
+        if (speciesSelect && speciesSelect.value !== '') {
+            maxE = (speciesSelect.value.toLowerCase() === 'humain') ? 2 : 1;
+        }
+
+        const elE = document.getElementById('count-e');
+        const elC = document.getElementById('count-c');
+        const elS = document.getElementById('count-s');
+
+        if (elE) elE.textContent = `${countE} / ${maxE}`;
+        if (elC) elC.textContent = `${countC} / 4`;
+        if (elS) elS.textContent = `${countS} / 2`;
+    }
+
+    function calculateXP() {
+        const speciesKey = document.getElementById('id-species').value;
+        const speciesData = DATABASE.species[speciesKey];
+        
+        const baseXp = speciesData ? speciesData.baseXp : 0;
+        document.getElementById('xp-base-val').value = baseXp;
+
+        const bonusXpInput = document.getElementById('xp-bonus-val');
+        const bonusXp = bonusXpInput ? (parseInt(bonusXpInput.value) || 0) : 0;
+
+        const totalXp = baseXp + bonusXp;
+        document.getElementById('xp-tot-val').value = totalXp;
+
+        let xpCarac = 0;
+        ['vig', 'ag', 'int', 'ru', 'vol', 'pre'].forEach(c => {
+            const inputEl = document.getElementById('c-' + c);
+            if (!inputEl) return;
+            const currentVal = parseInt(inputEl.value) || 2;
+            const baseVal = speciesData ? (speciesData[c] || 2) : 2;
+            if (currentVal > baseVal) {
+                for (let v = baseVal + 1; v <= currentVal; v++) {
+                    xpCarac += v * 10;
+                }
+            }
+        });
+
+        let xpSpecs = 0;
+        const careerKey = document.getElementById('id-career').value;
+        const careerData = DATABASE.careers[careerKey];
+        
+        if (selectedSpecs.length > 1) {
+            for (let i = 1; i < selectedSpecs.length; i++) {
+                const specKey = selectedSpecs[i];
+                const isCareerSpec = careerData && careerData.specs && careerData.specs[specKey];
+                let cost = (i + 1) * 10;
+                if (!isCareerSpec) cost += 10;
+                xpSpecs += cost;
+            }
+        }
+
+        let xpSkills = 0;
+        document.querySelectorAll('.skill-row').forEach(row => {
+            const careerInput = row.querySelector('.skill-career input');
+            const isCareer = careerInput ? careerInput.checked : false;
+            const shapes = row.querySelectorAll('.rank-shape');
+            
+            shapes.forEach((sh, idx) => {
+                const rankLevel = idx + 1;
+                if (sh.classList.contains('specialisation')) { 
+                    xpSkills += isCareer ? (rankLevel * 5) : ((rankLevel * 5) + 5);
+                }
+            });
+        });
+
+        const xpTalentsInput = document.getElementById('xp-talents-val');
+        const xpTalents = xpTalentsInput ? (parseInt(xpTalentsInput.value) || 0) : 0;
+
+        const totalUsed = xpCarac + xpSpecs + xpSkills + xpTalents;
+        const availXP = totalXp - totalUsed;
+
+        document.getElementById('xp-disp-val').value = availXP;
+
+        const detailEl = document.getElementById('xp-detail-text');
+        if (detailEl) {
+            detailEl.textContent = `Carac: ${xpCarac} | Spé: ${xpSpecs} | Comp: ${xpSkills} | Talents: ${xpTalents}`;
+        }
+    }
+
+    function updateDerivedStats() {
+        const speciesKey = document.getElementById('id-species').value;
+        const speciesData = DATABASE.species[speciesKey];
+
+        const vig = parseInt(document.getElementById('c-vig').value) || 0;
+        const vol = parseInt(document.getElementById('c-vol').value) || 0;
+
+        document.getElementById('st-soak').value = vig;
+
+        if (speciesData) {
+            document.getElementById('st-w-thresh').value = speciesData.wThresh + vig;
+            document.getElementById('st-s-thresh').value = speciesData.sThresh + vol;
+        } else {
+            document.getElementById('st-w-thresh').value = vig;
+            document.getElementById('st-s-thresh').value = vol;
+        }
+    }
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('btn-mode-creation').classList.toggle('active', mode === 'creation');
+        document.getElementById('btn-mode-game').classList.toggle('active', mode === 'game');
+        
+        if (mode === 'game') {
+            document.body.classList.add('mode-game');
+        } else {
+            document.body.classList.remove('mode-game');
+        }
+        renderSpecTags();
+        saveAll();
+    }
+
+    function setSkillFilter(filter) {
+        currentFilter = filter;
+        document.getElementById('btn-filter-all').classList.toggle('active', filter === 'all');
+        document.getElementById('btn-filter-career').classList.toggle('active', filter === 'career');
+        applySkillFilter();
+    }
+
+    function applySkillFilter() {
+        document.querySelectorAll('.skill-row').forEach(row => {
+            if (currentFilter === 'all') {
+                row.classList.remove('hidden');
+            } else {
+                const checkbox = row.querySelector('.skill-career input');
+                if (checkbox && checkbox.checked) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            }
+        });
+    }
+
+    function clickShape(el) {
+        if (currentMode === 'game') return;
+
+        const parent = el.closest('.skill-ranks');
+        let currentClass = 'none';
+        
+        shapeStates.forEach(s => { if(el.classList.contains(s.class)) currentClass = s.class; });
+        let currentIdx = shapeStates.findIndex(s => s.class === currentClass);
+        let nextIdx = (currentIdx + 1) % shapeStates.length;
+        
+        el.className = 'rank-shape ' + shapeStates[nextIdx].class;
+        el.querySelector('span').innerText = shapeStates[nextIdx].label;
+        
+        let score = 0;
+        parent.querySelectorAll('.rank-shape').forEach(b => {
+            if(!b.classList.contains('none')) score++;
+        });
+        
+        parent.setAttribute('data-score', score);
+        updateRowDice(parent.closest('.skill-row'));
+        calculateXP();
+        updateLegendCounts();
+        saveAll();
+    }
+
+    function updateRowDice(row) {
+        if (!row) return;
+        const caracType = row.getAttribute('data-carac');
+        const caracInput = document.getElementById('c-' + caracType);
+        const caracValue = caracInput ? (parseInt(caracInput.value) || 0) : 0;
+        
+        const ranksContainer = row.querySelector('.skill-ranks');
+        const skillValue = parseInt(ranksContainer.getAttribute('data-score')) || 0;
+        
+        const totalDice = Math.max(caracValue, skillValue);
+        const yellowDice = Math.min(caracValue, skillValue);
+        const greenDice = totalDice - yellowDice;
+        
+        const poolDiv = row.querySelector('.skill-pool-display');
+        if (poolDiv) {
+            poolDiv.replaceChildren();
+            for (let i = 0; i < greenDice; i++) { const die = document.createElement('span'); die.className = 'die-g'; die.textContent = '◊'; poolDiv.appendChild(die); }
+            for (let i = 0; i < yellowDice; i++) { const die = document.createElement('span'); die.className = 'die-y'; die.textContent = '⬢'; poolDiv.appendChild(die); }
+        }
+    }
+
+    function updateAllDice() {
+        document.querySelectorAll('.skill-row').forEach(row => updateRowDice(row));
+    }
+
+    function onSpeciesChange() {
+        const speciesKey = document.getElementById('id-species').value;
+        const speciesData = DATABASE.species[speciesKey];
+
+        if (speciesData) {
+            document.getElementById('c-vig').value = speciesData.vig;
+            document.getElementById('c-ag').value = speciesData.ag;
+            document.getElementById('c-int').value = speciesData.int;
+            document.getElementById('c-ru').value = speciesData.ru;
+            document.getElementById('c-vol').value = speciesData.vol;
+            document.getElementById('c-pre').value = speciesData.pre;
+        } else {
+            ['c-vig', 'c-ag', 'c-int', 'c-ru', 'c-vol', 'c-pre'].forEach(id => document.getElementById(id).value = 2);
+        }
+
+        updateDerivedStats();
+        updateAllDice();
+        calculateXP();
+        updateLegendCounts();
+        saveAll();
+    }
+
+    function onCareerChange() {
+        selectedSpecs = []; 
+        recalculateCareerSkills();
+        renderSpecTags();
+        calculateXP();
+        updateLegendCounts();
+        saveAll();
+    }
+
+    function recalculateCareerSkills() {
+        const careerKey = document.getElementById('id-career').value;
+        const careerData = DATABASE.careers[careerKey];
+
+        let careerSkillsSet = new Set();
+
+        if (careerData) {
+            careerData.skills.forEach(s => careerSkillsSet.add(s));
+            selectedSpecs.forEach(specKey => {
+                if (careerData.specs[specKey]) {
+                    careerData.specs[specKey].skills.forEach(s => careerSkillsSet.add(s));
+                }
+            });
+        }
+
+        document.querySelectorAll('.skill-row').forEach(row => {
+            const skillId = row.getAttribute('data-id');
+            const checkbox = row.querySelector('.skill-career input');
+            if (checkbox) {
+                checkbox.checked = careerSkillsSet.has(skillId);
+            }
+        });
+
+        applySkillFilter();
+    }
+
+    function renderSpecTags() {
+        const container = document.getElementById('spec-list-container');
+        const careerKey = document.getElementById('id-career').value;
+        const careerData = DATABASE.careers[careerKey];
+
+        container.querySelectorAll('.spec-tag').forEach(tag => tag.remove());
+
+        selectedSpecs.forEach(specKey => {
+            let label = specKey;
+            if (careerData && careerData.specs[specKey]) {
+                label = careerData.specs[specKey].label;
+            }
+
+            const tag = document.createElement('div');
+            tag.className = 'spec-tag';
+            tag.appendChild(document.createTextNode(label + ' '));
+            if (currentMode === 'creation') {
+                const cb = document.createElement('button');
+                cb.type = 'button';
+                cb.textContent = '×';
+                cb.setAttribute('aria-label', 'Retirer');
+                cb.addEventListener('click', () => removeSpec(specKey));
+                tag.appendChild(cb);
+            }
+            container.insertBefore(tag, container.querySelector('.btn-add-spec'));
+        });
+    }
+
+    function openSpecModal() {
+        const careerKey = document.getElementById('id-career').value;
+        if (!careerKey) {
+            showMessage("Veuillez d'abord choisir une carrière.");
+            return;
+        }
+
+        const careerData = DATABASE.careers[careerKey];
+        const modalSelect = document.getElementById('modalSpecSelect');
+        modalSelect.innerHTML = '';
+
+        Object.keys(careerData.specs).forEach(specKey => {
+            if (!selectedSpecs.includes(specKey)) {
+                const opt = document.createElement('option');
+                opt.value = specKey;
+                opt.textContent = careerData.specs[specKey].label;
+                modalSelect.appendChild(opt);
+            }
+        });
+
+        if (modalSelect.options.length === 0) {
+            showMessage("Toutes les spécialités de cette carrière sont déjà sélectionnées.");
+            return;
+        }
+
+        document.getElementById('specModal').style.display = 'flex';
+    }
+
+    function closeSpecModal() {
+        document.getElementById('specModal').style.display = 'none';
+    }
+
+    function confirmAddSpec() {
+        const modalSelect = document.getElementById('modalSpecSelect');
+        if (modalSelect.value) {
+            selectedSpecs.push(modalSelect.value);
+            renderSpecTags();
+            recalculateCareerSkills();
+            calculateXP();
+            saveAll();
+        }
+        closeSpecModal();
+    }
+
+    function removeSpec(specKey) {
+        selectedSpecs = selectedSpecs.filter(s => s !== specKey);
+        renderSpecTags();
+        recalculateCareerSkills();
+        calculateXP();
+        saveAll();
+    }
+
+    function saveAll() {
+        const data = { 
+            mode: currentMode,
+            filter: currentFilter,
+            inputs: {}, 
+            textareas: {}, 
+            skills: {}, 
+            selectedSpecs: selectedSpecs 
+        };
+        
+        document.querySelectorAll('input[id], select[id]').forEach(i => {
+            data.inputs[i.id] = (i.type === 'checkbox') ? i.checked : i.value;
+        });
+
+        document.querySelectorAll('textarea[id]').forEach(t => {
+            data.textareas[t.id] = t.value;
+        });
+
+        document.querySelectorAll('.skill-row').forEach(row => {
+            const id = row.getAttribute('data-id');
+            const states = [];
+            row.querySelectorAll('.rank-shape').forEach(b => {
+                let currentClass = 'none';
+                shapeStates.forEach(s => { if(b.classList.contains(s.class)) currentClass = s.class; });
+                states.push(currentClass);
+            });
+            data.skills[id] = {
+                c: row.querySelector('.skill-career input').checked,
+                s: row.querySelector('.skill-ranks').getAttribute('data-score'),
+                states: states
+            };
+        });
+
+        const json = JSON.stringify(data);
+        lastSheetJson = json;
+        try { localStorage.setItem('sw_sheet_v3', json); } catch (e) { console.warn('Stockage indisponible.', e); }
+    }
+
+    function loadAll() {
+        let raw = null;
+        try { raw = localStorage.getItem('sw_sheet_v3') || localStorage.getItem('sw_sheet_v2'); } catch (e) { raw = null; }
+        if (!raw && lastSheetJson) raw = lastSheetJson;
+        if (!raw) { 
+            updateAllDice(); 
+            updateDerivedStats(); 
+            calculateXP(); 
+            updateLegendCounts(); 
+            return; 
+        }
+        
+        let data;
+        try { 
+            data = JSON.parse(raw); 
+        } catch (error) { 
+            console.warn('Sauvegarde invalide.', error); 
+            return; 
+        }
+
+        if (data.mode) setMode(data.mode);
+        if (data.filter) setSkillFilter(data.filter);
+        if (data.selectedSpecs) selectedSpecs = data.selectedSpecs;
+
+        if (data.inputs) {
+            Object.keys(data.inputs).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.type === 'checkbox') el.checked = data.inputs[id];
+                    else el.value = data.inputs[id];
+                }
+            });
+        }
+
+        renderSpecTags();
+
+        if (data.textareas) {
+            Object.keys(data.textareas).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = data.textareas[id];
+            });
+        }
+
+        if (data.skills) {
+            Object.keys(data.skills).forEach(id => {
+                const row = document.querySelector(`.skill-row[data-id="${id}"]`);
+                if (row) {
+                    const skillData = data.skills[id];
+                    const cb = row.querySelector('.skill-career input');
+                    if (cb && skillData.c !== undefined) cb.checked = skillData.c;
+
+                    const shapes = row.querySelectorAll('.rank-shape');
+                    if (skillData.states && Array.isArray(skillData.states)) {
+                        shapes.forEach((sh, idx) => {
+                            const stateClass = skillData.states[idx] || 'none';
+                            sh.className = 'rank-shape ' + stateClass;
+                            const stateObj = shapeStates.find(s => s.class === stateClass);
+                            if (stateObj) sh.querySelector('span').textContent = stateObj.label;
+                        });
+                    }
+                    const ranksComp = row.querySelector('.skill-ranks');
+                    if (ranksComp && skillData.s !== undefined) {
+                        ranksComp.setAttribute('data-score', skillData.s);
+                    }
+                }
+            });
+        }
+
+        updateAllDice();
+        updateDerivedStats();
+        calculateXP();
+        updateLegendCounts();
+    }
+
+    function clearSheet() {
+        askConfirm("Voulez-vous vraiment réinitialiser la fiche ?", clearSheetNow);
+    }
+
+    function clearSheetNow() {
+        try { localStorage.removeItem('sw_sheet_v3'); localStorage.removeItem('sw_sheet_v2'); } catch (e) {}
+        location.reload();
+    }
+
+    const dlgState = { onOk: null, keepOpen: false };
+
+    function dlgEls() {
+        const m = document.getElementById('msgModal');
+        return { m: m, title: m.querySelector('.modal-title'), text: m.querySelector('.dlg-text'), area: m.querySelector('textarea'), ok: m.querySelector('.dlg-ok'), cancel: m.querySelector('.dlg-cancel') };
+    }
+
+    function openDialog(o) {
+        const e = dlgEls();
+        e.title.textContent = o.title || 'Information';
+        e.text.textContent = o.text || '';
+        e.area.style.display = (o.area !== undefined) ? 'block' : 'none';
+        e.area.value = o.area || '';
+        e.ok.textContent = o.okLabel || 'OK';
+        e.cancel.textContent = o.cancelLabel || 'Fermer';
+        e.cancel.style.display = (o.cancelLabel === null) ? 'none' : '';
+        dlgState.onOk = o.onOk || null;
+        dlgState.keepOpen = !!o.keepOpen;
+        e.m.style.display = 'flex';
+    }
+
+    function closeDialog() {
+        document.getElementById('msgModal').style.display = 'none';
+        dlgState.onOk = null;
+    }
+
+    function showMessage(text) { openDialog({ title: 'Information', text: text, cancelLabel: null }); }
+    function askConfirm(text, onYes) { openDialog({ title: 'Confirmation', text: text, okLabel: 'Confirmer', cancelLabel: 'Annuler', onOk: onYes }); }
+
+    function exportSheet() {
+        saveAll();
+        openDialog({
+            title: 'Exporter la fiche',
+            text: 'Copiez ce texte et conservez-le (Notes, Messages...). Pour restaurer : Importer une fiche.',
+            area: lastSheetJson, okLabel: 'Copier', cancelLabel: 'Fermer', keepOpen: true,
+            onOk: () => {
+                const e = dlgEls();
+                e.area.focus(); e.area.select();
+                try { e.area.setSelectionRange(0, e.area.value.length); } catch (err) {}
+                let ok = false;
+                try { ok = document.execCommand('copy'); } catch (err) {}
+                if (!ok && navigator.clipboard) { navigator.clipboard.writeText(e.area.value).catch(() => {}); }
+                e.text.textContent = 'Texte copié. S\u2019il ne l\u2019est pas, maintenez le doigt sur le texte sélectionné puis choisissez Copier.';
+            }
+        });
+    }
+
+    function importSheet() {
+        openDialog({
+            title: 'Importer une fiche',
+            text: 'Collez ici le texte exporté, puis validez.',
+            area: '', okLabel: 'Importer', cancelLabel: 'Annuler',
+            onOk: (value) => {
+                try {
+                    const parsed = JSON.parse(value);
+                    if (!parsed || typeof parsed !== 'object') throw new Error('format');
+                    lastSheetJson = value;
+                    try { localStorage.setItem('sw_sheet_v3', value); } catch (err) {}
+                    loadAll();
+                } catch (err) {
+                    showMessage('Texte invalide : impossible de charger la fiche.');
+                }
+            }
+        });
+    }
+
+    // Écouteurs pour mise à jour continue & auto-sauvegarde
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAll();
+        
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('input', () => {
+                if (el.id.startsWith('c-')) {
+                    updateDerivedStats();
+                    updateAllDice();
+                }
+                calculateXP();
+                saveAll();
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.skill-ranks .shape-container').forEach(container => {
+            container.addEventListener('click', () => {
+                const shape = container.querySelector('.rank-shape');
+                if (shape) clickShape(shape);
+            });
+        });
+
+        document.querySelectorAll('.skill-career').forEach(cell => {
+            cell.addEventListener('click', e => {
+                if (currentMode === 'game' || e.target.tagName === 'INPUT') return;
+                const cb = cell.querySelector('input[type="checkbox"]');
+                if (cb) cb.click();
+            });
+        });
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', () => { calculateXP(); saveAll(); });
+        });
+
+        document.getElementById('specModal').addEventListener('click', e => {
+            if (e.target.id === 'specModal') closeSpecModal();
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const on = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); };
+        on('btn-mode-creation', () => setMode('creation'));
+        on('btn-mode-game', () => setMode('game'));
+        on('btn-filter-all', () => setSkillFilter('all'));
+        on('btn-filter-career', () => setSkillFilter('career'));
+        on('btn-add-spec', openSpecModal);
+        on('btn-spec-cancel', closeSpecModal);
+        on('btn-spec-ok', confirmAddSpec);
+        on('btn-clear', clearSheet);
+        on('btn-export', exportSheet);
+        on('btn-import', importSheet);
+        document.getElementById('id-species').addEventListener('change', onSpeciesChange);
+        document.getElementById('id-career').addEventListener('change', onCareerChange);
+
+        const d = dlgEls();
+        d.ok.addEventListener('click', () => {
+            const fn = dlgState.onOk, keep = dlgState.keepOpen, val = d.area.value;
+            if (!keep) closeDialog();
+            if (fn) fn(val);
+        });
+        d.cancel.addEventListener('click', closeDialog);
+        d.m.addEventListener('click', ev => { if (ev.target === d.m) closeDialog(); });
+
+        const refresh = () => { updateDerivedStats(); updateAllDice(); calculateXP(); saveAll(); };
+        ['vig', 'ag', 'int', 'ru', 'vol', 'pre'].forEach(k => {
+            const el = document.getElementById('c-' + k);
+            el.addEventListener('focus', () => setTimeout(() => { try { el.select(); } catch (err) {} }, 0));
+            el.addEventListener('input', () => {
+                const v = parseInt(el.value, 10);
+                if (!isNaN(v)) { el.value = Math.min(6, Math.max(1, v)); refresh(); }
+            });
+            el.addEventListener('blur', () => { if (el.value === '') { el.value = 1; refresh(); } });
+            el.closest('.carac-wrapper').addEventListener('click', ev => {
+                if (currentMode === 'creation' && ev.target !== el) el.focus();
+            });
+        });
+
+        document.querySelectorAll('input[type="number"]').forEach(el => {
+            el.addEventListener('focus', () => setTimeout(() => { try { el.select(); } catch (err) {} }, 0));
+        });
+    });
+</script>
+</body>
+</html>
