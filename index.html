@@ -1278,6 +1278,7 @@
     let currentFilter = 'all';    
     let selectedSpecs = [];
     let lastSheetJson = '';
+    let isRestoring = false;
 
     const DATABASE = {
         species: {
@@ -1834,6 +1835,7 @@
     }
 
     function saveAll() {
+	if (isRestoring) return;
         const data = { 
             mode: currentMode,
             filter: currentFilter,
@@ -1871,7 +1873,13 @@
         try { localStorage.setItem('sw_sheet_v3', json); } catch (e) { console.warn('Stockage indisponible.', e); }
     }
 
+
     function loadAll() {
+    	isRestoring = true;
+    	try { loadAllInner(); } finally { isRestoring = false; }
+	}
+
+    function loadAllInner() {
         let raw = null;
         try { raw = localStorage.getItem('sw_sheet_v3') || localStorage.getItem('sw_sheet_v2'); } catch (e) { raw = null; }
         if (!raw && lastSheetJson) raw = lastSheetJson;
