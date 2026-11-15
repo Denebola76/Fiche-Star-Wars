@@ -479,11 +479,36 @@
         .tt-n.passif .h { background: #27344f; }
         .tt-n .b { padding: 5px 8px 0; font-size: 12px; color: #6f6955; display: flex; justify-content: space-between; gap: 6px; }
         .tt-n .c { padding: 2px 8px; font-weight: 700; font-size: 15px; }
-        .tt-n.verrouille { opacity: .42; }
-        .tt-n.xp { opacity: .8; }
-        .tt-n.disponible { border-color: #2f8fa8; box-shadow: 0 0 0 3px #2f8fa855; }
-        .tt-n.acquis { border-color: #4f7a3a; background: #e0edd0; }
+        .tt-n.verrouille { opacity: .38; filter: grayscale(1); border-style: dashed; }
+        .tt-n.xp { opacity: .8; border-style: dashed; border-color: #c77d1a; }
+        .tt-n.disponible { border-color: #0b83a8; border-width: 4px; background: #e6f6fb; box-shadow: 0 0 0 4px #2f8fa866; }
+        .tt-n.acquis { border-color: #2e6b1f; border-width: 4px; background: #cfe8b4; }
         .tt-n.sel { outline: 3px solid #e0a82e; outline-offset: 2px; }
+        .tt-n .h { padding-right: 38px; }
+        .tt-n .st { position: absolute; top: 3px; right: 4px; width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid currentColor; color: #666; font-weight: 900; font-size: 15px; line-height: 22px; text-align: center; }
+        .tt-n.acquis .st { color: #2e6b1f; }
+        .tt-n.disponible .st { color: #0b6e8c; }
+        .tt-n.xp .st { color: #a15f00; font-size: 10px; }
+        .tt-n .l { font-weight: 800; text-transform: uppercase; font-size: 11px; }
+        .tt-n.acquis .l { color: #2e6b1f; }
+        .tt-n.disponible .l { color: #0b6e8c; }
+        .tt-n.xp .l { color: #a15f00; }
+        #tt-views { display: flex; gap: 4px; }
+        #tt-views button.on { background: var(--sw-blue-accent); color: #fff; border-color: #3a7d8a; }
+        #tt-leg { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .78rem; padding: 4px 0 8px; font-weight: 600; }
+        #tt-leg .lg { display: inline-flex; align-items: center; gap: 5px; }
+        #tt-leg i { font-style: normal; width: 22px; height: 22px; border-radius: 50%; border: 2px solid; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; font-size: 12px; background: #fff; }
+        #tt-leg .acq i { color: #2e6b1f; } #tt-leg .dis i { color: #0b6e8c; } #tt-leg .xpi i { color: #a15f00; font-size: 9px; } #tt-leg .ver i { color: #666; }
+        #tt-mine h3 { margin: 12px 0 4px; color: var(--sw-red-dark); text-transform: uppercase; font-size: .95rem; letter-spacing: 1px; }
+        #tt-mine h4 { margin: 10px 0 4px; font-size: .85rem; text-transform: uppercase; color: #555; }
+        #tt-mine .m { color: #6f6955; font-size: .85rem; }
+        .tt-c { background: #fff; border: 2px solid #8a8570; border-left-width: 8px; border-radius: 6px; padding: 8px 10px; margin: 6px 0; }
+        .tt-c.actif { border-left-color: #8c2a20; }
+        .tt-c.passif { border-left-color: #27344f; }
+        .tt-ch { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1.05rem; }
+        .tt-ch .rk { background: #2e6b1f; color: #fff; border-radius: 12px; padding: 1px 10px; font-weight: 800; font-size: .85rem; }
+        .tt-c p { margin: 4px 0 0; font-size: .95rem; }
+        @media (pointer: coarse) { .tt-bar button, #tt-tabs button, #tt-buy { min-height: 44px; padding: 6px 14px; } }
         #tt-dt { background: var(--bg-paper); border: 2px solid #8a8570; border-top: 0; padding: 10px 14px; display: flex; gap: 16px; justify-content: space-between; align-items: flex-start; min-height: 110px; font-size: .9rem; }
         #tt-dt h2 { margin: 0 0 4px; font-size: 1.05rem; }
         #tt-dt p { margin: 3px 0; max-width: 70ch; }
@@ -1260,16 +1285,19 @@
         <div id="tt-main">
             <div class="tt-bar">
                 <div id="tt-tabs"></div>
+                <div id="tt-views"><button type="button" id="tt-vw-tree">Arbre</button><button type="button" id="tt-vw-mine">Mes talents</button></div>
                 <div class="tt-xp">XP disponible : <b id="tt-av">0</b> &nbsp;·&nbsp; Dépensé dans l'arbre : <b id="tt-sp">0</b></div>
-                <div>
+                <div id="tt-zoomgrp">
                     <button type="button" id="tt-zm" title="Zoom arrière">−</button>
                     <button type="button" id="tt-zp" title="Zoom avant">+</button>
                     <button type="button" id="tt-fit">Ajuster</button>
                     <button type="button" id="tt-rs">Réinitialiser</button>
                 </div>
             </div>
+            <div id="tt-leg"></div>
             <div id="tt-vp"><div id="tt-st"></div></div>
             <div id="tt-dt"></div>
+            <div id="tt-mine"></div>
         </div>
     </div>
 
@@ -1681,6 +1709,7 @@
             document.body.classList.remove('mode-game');
         }
         renderSpecTags();
+        if (typeof ttModeChanged === 'function') ttModeChanged();
         saveAll();
     }
 
@@ -2246,6 +2275,10 @@ const TT = { NW: 176, NH: 88, CW: 216, RH: 136, P: 20 };
 TT.W = 2 * TT.P + 3 * TT.CW + TT.NW;
 TT.H = 2 * TT.P + 4 * TT.RH + TT.NH;
 const TT_LBL = { acquis: 'Acquis', disponible: 'Disponible', verrouille: 'Verrouillé', xp: 'XP insuffisant' };
+const TT_ICO = { acquis: '✓', disponible: '＋', verrouille: '🔒', xp: 'XP' };
+let ttViewUser = null;   // null = automatique : « Mes talents » en mode Jeu, « Arbre » en mode Création
+const ttView = () => ttViewUser || (currentMode === 'game' ? 'mine' : 'tree');
+function ttModeChanged() { ttViewUser = null; ttNeedFit = true; if (typeof renderTrees === 'function') renderTrees(); }
 let ttSpec = null, ttSel = null, ttV = { x: 0, y: 0, k: 1 }, ttMoved = false, ttNeedFit = true, ttMaps = {};
 const $t = id => document.getElementById(id);
 
@@ -2292,6 +2325,12 @@ function renderTrees() {
         $t('tt-empty').textContent = 'Aucun arbre disponible pour vos spécialisations. Arbres disponibles : ' + dispo + '.';
         return;
     }
+    const vw = ttView(), isTree = vw === 'tree';
+    ['tt-vp', 'tt-dt', 'tt-zoomgrp', 'tt-leg'].forEach(id => { $t(id).style.display = isTree ? '' : 'none'; });
+    $t('tt-mine').style.display = isTree ? 'none' : '';
+    $t('tt-vw-tree').className = isTree ? 'on' : '';
+    $t('tt-vw-mine').className = isTree ? '' : 'on';
+    $t('tt-tabs').style.display = (isTree && list.length > 0) ? '' : 'none';
     $t('tt-tabs').innerHTML = list.map(k => '<button type="button" data-k="' + k + '" class="' + (k === ttSpec ? 'on' : '') + '">' + TALENT_TREES[k].nom + '</button>').join('');
     const t = TALENT_TREES[ttSpec].talents, N = ttMap(ttSpec).N;
     const pos = n => [(n.pos[1] - 1) * TT.CW + TT.P, (n.pos[0] - 1) * TT.RH + TT.P];
@@ -2303,15 +2342,53 @@ function renderTrees() {
     $t('tt-st').innerHTML = '<svg width="' + TT.W + '" height="' + TT.H + '">' + svg + '</svg>' + t.map(n => {
         const p = pos(n), s = ttState(n), r = ttRank(n);
         return '<div class="tt-n ' + n.type + ' ' + s + (ttSel === n.id ? ' sel' : '') + '" data-id="' + n.id + '" style="left:' + p[0] + 'px;top:' + p[1] + 'px">'
+            + '<div class="st">' + TT_ICO[s] + '</div>'
             + '<div class="h">' + n.nom + '</div>'
-            + '<div class="b"><span>' + (n.type === 'actif' ? 'Actif' : 'Passif') + (n.classe ? ' · rang ' + r : '') + '</span><span>' + TT_LBL[s] + '</span></div>'
+            + '<div class="b"><span>' + (n.type === 'actif' ? 'Actif' : 'Passif') + (n.classe ? ' · rang ' + r : '') + '</span><span class="l">' + TT_LBL[s] + '</span></div>'
             + '<div class="c">' + n.cout + ' XP</div></div>';
     }).join('');
     $t('tt-sp').textContent = ttSpent(ttSpec);
     $t('tt-av').textContent = ttAvail();
     $t('tt-av').className = ttAvail() < 0 ? 'neg' : '';
     ttDetail();
-    if (ttNeedFit && $t('tt-vp').clientWidth) { ttFit(); ttNeedFit = false; }
+    ttLegend(t);
+    $t('tt-mine').innerHTML = ttMineHtml(list);
+    if (isTree && ttNeedFit && $t('tt-vp').clientWidth) { ttFit(); ttNeedFit = false; }
+}
+
+function ttLegend(t) {
+    const c = { acquis: 0, disponible: 0, xp: 0, verrouille: 0 };
+    t.forEach(n => { c[ttState(n)]++; });
+    $t('tt-leg').innerHTML = '<span class="lg acq"><i>✓</i>Acquis (' + c.acquis + ')</span>'
+        + '<span class="lg dis"><i>＋</i>Disponible (' + c.disponible + ')</span>'
+        + '<span class="lg xpi"><i>XP</i>XP insuffisant (' + c.xp + ')</span>'
+        + '<span class="lg ver"><i>🔒</i>Verrouillé (' + c.verrouille + ')</span>';
+}
+
+// Liste des talents acquis (regroupés par talent, avec leur rang), actifs d'abord
+function ttMineHtml(list) {
+    let out = '';
+    list.forEach(k => {
+        const T = TALENT_TREES[k].talents, got = ttGot(k), agg = {}, order = [];
+        T.forEach(n => {
+            if (!got.includes(n.id)) return;
+            if (!agg[n.talent]) { agg[n.talent] = { n: n, c: 0 }; order.push(n.talent); }
+            agg[n.talent].c++;
+        });
+        out += '<h3>' + TALENT_TREES[k].nom + '</h3>';
+        if (!order.length) { out += '<p class="m">Aucun talent acquis dans cet arbre.</p>'; return; }
+        const card = id => {
+            const a = agg[id], n = a.n;
+            return '<div class="tt-c ' + n.type + '"><div class="tt-ch"><b>' + n.nom + '</b>'
+                + (a.c > 1 || n.classe ? '<span class="rk">Rang ' + a.c + '</span>' : '')
+                + '<span class="tt-t ' + n.type + '">' + (n.type === 'actif' ? 'Actif' : 'Passif') + '</span></div>'
+                + '<p>' + ttDesc(n.description) + '</p></div>';
+        };
+        const act = order.filter(id => agg[id].n.type === 'actif'), pas = order.filter(id => agg[id].n.type !== 'actif');
+        if (act.length) out += '<h4>Actifs</h4>' + act.map(card).join('');
+        if (pas.length) out += '<h4>Passifs</h4>' + pas.map(card).join('');
+    });
+    return out;
 }
 
 function ttDetail() {
@@ -2341,7 +2418,7 @@ function ttBuy(id) {
 // ---- Zoom et déplacement ----
 const ttVp = $t('tt-vp');
 function ttApply() { $t('tt-st').style.transform = 'translate(' + ttV.x + 'px,' + ttV.y + 'px) scale(' + ttV.k + ')'; }
-function ttFit() { const k = Math.min(ttVp.clientWidth / TT.W, ttVp.clientHeight / TT.H, 1); ttV = { k: k, x: (ttVp.clientWidth - TT.W * k) / 2, y: (ttVp.clientHeight - TT.H * k) / 2 }; ttApply(); }
+function ttFit() { if (!ttVp.clientWidth) { ttNeedFit = true; return; } const k =Math.min(ttVp.clientWidth / TT.W, ttVp.clientHeight / TT.H, 1); ttV = { k: k, x: (ttVp.clientWidth - TT.W * k) / 2, y: (ttVp.clientHeight - TT.H * k) / 2 }; ttApply(); }
 function ttZoom(f, cx, cy) { const k = Math.min(2, Math.max(.3, ttV.k * f)); ttV.x = cx - (cx - ttV.x) * k / ttV.k; ttV.y = cy - (cy - ttV.y) * k / ttV.k; ttV.k = k; ttApply(); }
 ttVp.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); const r = ttVp.getBoundingClientRect(); ttZoom(e.deltaY < 0 ? 1.1 : 1 / 1.1, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
 let ttDr = null;
@@ -2353,7 +2430,9 @@ addEventListener('resize', () => { if (ttSpec) ttFit(); });
 
 // ---- Commandes ----
 $t('tt-tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { ttSpec = b.dataset.k; ttSel = null; ttNeedFit = true; renderTrees(); } });
-$t('tt-zp').onclick = () => ttZoom(1.2, ttVp.clientWidth / 2, ttVp.clientHeight / 2);
+$t('tt-vw-tree').onclick = () => { ttViewUser = 'tree'; ttNeedFit = true; renderTrees(); };
+$t('tt-vw-mine').onclick = () => { ttViewUser = 'mine'; renderTrees(); };
+$t('tt-zp').onclick =() => ttZoom(1.2, ttVp.clientWidth / 2, ttVp.clientHeight / 2);
 $t('tt-zm').onclick = () => ttZoom(1 / 1.2, ttVp.clientWidth / 2, ttVp.clientHeight / 2);
 $t('tt-fit').onclick = ttFit;
 $t('tt-rs').onclick = () => {
