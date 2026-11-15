@@ -459,6 +459,42 @@
             .weapons-table input { padding: 12px 6px; }
             .inventory-header-inputs input { min-height: 36px; width: 56px; }
         }
+
+        /* ===== Arbres de talents ===== */
+        .tt { margin-top: 15px; }
+        .tt-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 6px 0; font-size: .85rem; }
+        .tt-bar button, #tt-tabs button, #tt-buy { font: inherit; padding: 3px 10px; border: 1px solid #6b644f; background: #e8e0c6; border-radius: 3px; cursor: pointer; color: var(--sw-gray-dark); }
+        .tt-bar button:hover, #tt-tabs button:hover { background: #fff6d8; }
+        #tt-tabs { display: flex; gap: 4px; }
+        #tt-tabs button.on { background: var(--sw-red-dark); color: #fff; border-color: var(--sw-red-dark); }
+        .tt-xp { margin-left: auto; }
+        .tt-xp b { font-size: 1.05rem; }
+        .tt-xp b.neg { color: #b3261e; }
+        #tt-vp { height: 430px; overflow: hidden; position: relative; cursor: grab; touch-action: none; border: 2px solid #8a8570; border-radius: 6px; background: rgba(255,255,255,.25); }
+        #tt-st { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+        #tt-st svg { position: absolute; left: 0; top: 0; }
+        .tt-n { position: absolute; width: 176px; height: 88px; background: var(--bg-paper); border: 3px solid #8a8570; border-radius: 6px; cursor: pointer; overflow: hidden; user-select: none; }
+        .tt-n .h { color: #fff; font-weight: 700; font-size: 14px; padding: 4px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tt-n.actif .h { background: #8c2a20; }
+        .tt-n.passif .h { background: #27344f; }
+        .tt-n .b { padding: 5px 8px 0; font-size: 12px; color: #6f6955; display: flex; justify-content: space-between; gap: 6px; }
+        .tt-n .c { padding: 2px 8px; font-weight: 700; font-size: 15px; }
+        .tt-n.verrouille { opacity: .42; }
+        .tt-n.xp { opacity: .8; }
+        .tt-n.disponible { border-color: #2f8fa8; box-shadow: 0 0 0 3px #2f8fa855; }
+        .tt-n.acquis { border-color: #4f7a3a; background: #e0edd0; }
+        .tt-n.sel { outline: 3px solid #e0a82e; outline-offset: 2px; }
+        #tt-dt { background: var(--bg-paper); border: 2px solid #8a8570; border-top: 0; padding: 10px 14px; display: flex; gap: 16px; justify-content: space-between; align-items: flex-start; min-height: 110px; font-size: .9rem; }
+        #tt-dt h2 { margin: 0 0 4px; font-size: 1.05rem; }
+        #tt-dt p { margin: 3px 0; max-width: 70ch; }
+        #tt-dt .m { color: #6f6955; font-size: .8rem; }
+        #tt-dt .w { font-weight: 600; }
+        #tt-buy:disabled { opacity: .5; cursor: default; }
+        .tt-t { font-size: 12px; color: #fff; padding: 1px 7px; border-radius: 3px; vertical-align: 2px; }
+        .tt-t.actif { background: #8c2a20; }
+        .tt-t.passif { background: #27344f; }
+        .tt-bd { display: inline-block; width: .8em; height: .8em; background: #6fb3d6; border: 1px solid #2b6b8a; vertical-align: -1px; }
+        #tt-empty { font-size: .85rem; color: #6f6955; padding: 6px 0; }
     </style>
 </head>
 <body>
@@ -1217,6 +1253,26 @@
         </div>
     </div>
 
+    <!-- ARBRES DE TALENTS -->
+    <div class="tt" id="tt-section">
+        <div class="block-title">Arbres de talents</div>
+        <div id="tt-empty"></div>
+        <div id="tt-main">
+            <div class="tt-bar">
+                <div id="tt-tabs"></div>
+                <div class="tt-xp">XP disponible : <b id="tt-av">0</b> &nbsp;·&nbsp; Dépensé dans l'arbre : <b id="tt-sp">0</b></div>
+                <div>
+                    <button type="button" id="tt-zm" title="Zoom arrière">−</button>
+                    <button type="button" id="tt-zp" title="Zoom avant">+</button>
+                    <button type="button" id="tt-fit">Ajuster</button>
+                    <button type="button" id="tt-rs">Réinitialiser</button>
+                </div>
+            </div>
+            <div id="tt-vp"><div id="tt-st"></div></div>
+            <div id="tt-dt"></div>
+        </div>
+    </div>
+
     <!-- FOOTER DE GESTION DES XP -->
     <div class="sheet-footer">
         <div class="xp-container">
@@ -1277,6 +1333,7 @@
     let currentMode = 'creation'; 
     let currentFilter = 'all';    
     let selectedSpecs = [];
+    let talentTrees = {};   // { cléSpécialisation: [ids de talents achetés] }
     let lastSheetJson = '';
     let isRestoring = false;
 
@@ -1335,8 +1392,8 @@
                 skills: ["athletisme", "coercition", "perception", "pilotage-planetaire", "survie", "distance-lourdes"],
                 specs: {
                     "assassin": { label: "Assassin", skills: ["discretion", "corps-a-corps", "distance-legeres", "perception"] },
-                    "gadgeteur": { label: "Gadgeteur", skills: ["mecanique", "coercition", "pugilat", "distance-lourdes"] },
-                    "traqueur": { label: "Traqueur", skills: ["survie", "perception", "bordure-exterieure", "pilotage-espace"] }
+                    "gadgeteur": { label: "Expert en gadgets", skills: ["pugilat", "coercition", "mecanique", "distance-legeres"] },
+                    "traqueur": { label: "Expert en survie", skills: ["xenologie", "perception", "resistance", "survie"] }
                 }
             },
             "colon": {
@@ -1582,15 +1639,17 @@
         const xpTalentsInput = document.getElementById('xp-talents-val');
         const xpTalents = xpTalentsInput ? (parseInt(xpTalentsInput.value) || 0) : 0;
 
-        const totalUsed = xpCarac + xpSpecs + xpSkills + xpTalents;
+        const xpTrees = (typeof getTreesXP === 'function') ? getTreesXP() : 0;
+        const totalUsed = xpCarac + xpSpecs + xpSkills + xpTalents + xpTrees;
         const availXP = totalXp - totalUsed;
 
         document.getElementById('xp-disp-val').value = availXP;
 
         const detailEl = document.getElementById('xp-detail-text');
         if (detailEl) {
-            detailEl.textContent = `Carac: ${xpCarac} | Spé: ${xpSpecs} | Comp: ${xpSkills} | Talents: ${xpTalents}`;
+            detailEl.textContent = `Carac: ${xpCarac} | Spé: ${xpSpecs} | Comp: ${xpSkills} | Talents: ${xpTalents} | Arbres: ${xpTrees}`;
         }
+        if (typeof renderTrees === 'function') renderTrees();
     }
 
     function updateDerivedStats() {
@@ -1720,7 +1779,8 @@
     }
 
     function onCareerChange() {
-        selectedSpecs = []; 
+        if (typeof ttDrop === 'function') selectedSpecs.forEach(ttDrop);
+        selectedSpecs = [];
         recalculateCareerSkills();
         renderSpecTags();
         calculateXP();
@@ -1827,7 +1887,8 @@
     }
 
     function removeSpec(specKey) {
-        selectedSpecs = selectedSpecs.filter(s => s !== specKey);
+        if (typeof ttDrop === 'function') ttDrop(specKey);
+        selectedSpecs =selectedSpecs.filter(s => s !== specKey);
         renderSpecTags();
         recalculateCareerSkills();
         calculateXP();
@@ -1835,14 +1896,15 @@
     }
 
     function saveAll() {
-	if (isRestoring) return;
-        const data = { 
+        if (isRestoring) return;
+        const data = {
             mode: currentMode,
             filter: currentFilter,
             inputs: {}, 
             textareas: {}, 
             skills: {}, 
-            selectedSpecs: selectedSpecs 
+            selectedSpecs: selectedSpecs,
+            talentTrees: talentTrees
         };
         
         document.querySelectorAll('input[id], select[id]').forEach(i => {
@@ -1873,11 +1935,10 @@
         try { localStorage.setItem('sw_sheet_v3', json); } catch (e) { console.warn('Stockage indisponible.', e); }
     }
 
-
     function loadAll() {
-    	isRestoring = true;
-    	try { loadAllInner(); } finally { isRestoring = false; }
-	}
+        isRestoring = true;
+        try { loadAllInner(); } finally { isRestoring = false; }
+    }
 
     function loadAllInner() {
         let raw = null;
@@ -1902,6 +1963,7 @@
         if (data.mode) setMode(data.mode);
         if (data.filter) setSkillFilter(data.filter);
         if (data.selectedSpecs) selectedSpecs = data.selectedSpecs;
+        if (data.talentTrees && typeof data.talentTrees === "object") talentTrees = data.talentTrees;
 
         if (data.inputs) {
             Object.keys(data.inputs).forEach(id => {
@@ -2111,6 +2173,196 @@
             el.addEventListener('focus', () => setTimeout(() => { try { el.select(); } catch (err) {} }, 0));
         });
     });
+</script>
+
+<!-- ===== DONNÉES DES ARBRES DE TALENTS (à modifier pour ajouter/corriger un arbre) =====
+     pos = [ligne, colonne] ; liens = cases reliées par un trait (une seule direction suffit) ;
+     talent = identifiant du talent (les cases de même talent cumulent leurs rangs) ; classe = talent à rangs.
+     La clé de chaque arbre doit être la clé de la spécialisation dans DATABASE.careers[...].specs. -->
+<script>
+const TALENT_TREES = {
+  assassin: {
+    nom: "Assassin",
+    carriere: "Chasseur de primes",
+    edition: "Aux Confins de l'Empire",
+    competencesBonus: ["Corps à corps", "Discrétion", "Distance (Armes lourdes)", "Magouilles"],
+    talents: [
+      {id:"a11", talent:"robustesse", nom:"Robustesse", cout:5, type:"passif", classe:false, pos:[1,1], liens:["a21"],
+       description:"Augmentez votre seuil de stress de +1."},
+      {id:"a12", talent:"coup-mortel", nom:"Coup mortel", cout:5, type:"passif", classe:true, pos:[1,2], liens:["a22"],
+       description:"Ajoutez +10 par rang de Coup mortel aux résultats des blessures critiques infligées à vos adversaires."},
+      {id:"a13", talent:"filature", nom:"Filature", cout:5, type:"passif", classe:true, pos:[1,3], liens:["a23"],
+       description:"Ajoutez [B] par rang de Filature à tous vos tests de Coordination et de Discrétion."},
+      {id:"a14", talent:"esquive", nom:"Esquive", cout:5, type:"actif", classe:true, pos:[1,4], liens:["a24"],
+       description:"Quand vous êtes la cible d'un test de combat, vous pouvez esquiver au prix d'une broutille, mais subissez du stress qui ne peut dépasser votre rang d'Esquive. Ensuite, améliorez autant de dés de difficulté du test que de stress subi."},
+
+      {id:"a21", talent:"coup-precis", nom:"Coup précis", cout:10, type:"actif", classe:true, pos:[2,1], liens:["a22","a31"],
+       description:"Une fois par round, vous pouvez exécuter une manœuvre, mais subissez du stress qui ne peut dépasser votre rang de Coup précis. Ensuite, réduisez d'autant la défense au corps à corps et à distance de la cible."},
+      {id:"a22", talent:"ressort", nom:"Ressort", cout:10, type:"actif", classe:false, pos:[2,2], liens:["a23","a32"],
+       description:"Une fois par round, que vous soyez assis ou à terre, vous pouvez vous relever au prix d'une broutille."},
+      {id:"a23", talent:"coup-eclair", nom:"Coup éclair", cout:10, type:"passif", classe:true, pos:[2,3], liens:["a24","a33"],
+       description:"Ajoutez [B] par rang de Coup éclair à vos tests de combat contre les cibles qui n'ont pas encore agi de la rencontre."},
+      {id:"a24", talent:"arme-en-main", nom:"Arme en main", cout:10, type:"actif", classe:false, pos:[2,4], liens:["a34"],
+       description:"Une fois par round, vous pouvez dégainer ou rengainer une arme, ou sortir ou ranger un objet accessible au prix d'une broutille."},
+
+      {id:"a31", talent:"coup-cible", nom:"Coup ciblé", cout:15, type:"actif", classe:false, pos:[3,1], liens:["a41"],
+       description:"Après avoir réussi une attaque, vous pouvez dépenser 1 point de Destin pour ajouter des dégâts égaux à votre Agilité à un coup."},
+      {id:"a32", talent:"filature", nom:"Filature", cout:15, type:"passif", classe:true, pos:[3,2], liens:["a33","a42"],
+       description:"Ajoutez [B] par rang de Filature à tous vos tests de Coordination et de Discrétion."},
+      {id:"a33", talent:"coup-mortel", nom:"Coup mortel", cout:15, type:"passif", classe:true, pos:[3,3], liens:["a43"],
+       description:"Ajoutez +10 par rang de Coup mortel aux résultats des blessures critiques infligées à vos adversaires."},
+      {id:"a34", talent:"lecons-anatomie", nom:"Leçons d'anatomie", cout:15, type:"actif", classe:false, pos:[3,4], liens:["a44"],
+       description:"Après avoir réussi une attaque, vous pouvez dépenser 1 point de Destin pour ajouter des dégâts égaux à votre Intelligence à un coup."},
+
+      {id:"a41", talent:"filature", nom:"Filature", cout:20, type:"passif", classe:true, pos:[4,1], liens:["a42","a51"],
+       description:"Ajoutez [B] par rang de Filature à tous vos tests de Coordination et de Discrétion."},
+      {id:"a42", talent:"tireur-elite", nom:"Tireur d'élite", cout:20, type:"actif", classe:true, pos:[4,2], liens:["a52"],
+       description:"Avant de porter une attaque à distance (mais pas avec une arme de jet), vous pouvez exécuter une manœuvre pour augmenter la portée de votre arme à distance de 1 niveau par rang de Tireur d'élite. Pour chaque niveau de portée en plus, améliorez 1 dé de difficulté de l'attaque."},
+      {id:"a43", talent:"esquive", nom:"Esquive", cout:20, type:"actif", classe:true, pos:[4,3], liens:["a53"],
+       description:"Quand vous êtes la cible d'un test de combat, vous pouvez esquiver au prix d'une broutille, mais subissez du stress qui ne peut dépasser votre rang d'Esquive. Ensuite, améliorez autant de dés de difficulté du test que de stress subi."},
+      {id:"a44", talent:"coup-mortel", nom:"Coup mortel", cout:20, type:"passif", classe:true, pos:[4,4], liens:["a54"],
+       description:"Ajoutez +10 par rang de Coup mortel aux résultats des blessures critiques infligées à vos adversaires."},
+
+      {id:"a51", talent:"coup-precis", nom:"Coup précis", cout:25, type:"actif", classe:true, pos:[5,1], liens:[],
+       description:"Une fois par round, vous pouvez exécuter une manœuvre, mais subissez du stress qui ne peut dépasser votre rang de Coup précis. Ensuite, réduisez d'autant la défense au corps à corps et à distance de la cible."},
+      {id:"a52", talent:"precision-mortelle", nom:"Précision mortelle", cout:25, type:"passif", classe:true, pos:[5,2], liens:[],
+       description:"Choisissez 1 compétence de combat au moment de l'acquisition de ce talent. Ajoutez des dégâts égaux à votre rang de Précision mortelle à un coup d'une attaque réussie utilisant cette compétence."},
+      {id:"a53", talent:"entrainement", nom:"Entraînement", cout:25, type:"passif", classe:false, pos:[5,3], liens:[],
+       description:"Vous gagnez +1 dans une caractéristique. Cela ne permet pas d'augmenter une caractéristique au-delà de 6."},
+      {id:"a54", talent:"expert-discretion", nom:"Expert en discrétion", cout:25, type:"actif", classe:false, pos:[5,4], liens:[],
+       description:"Une fois par round, subissez 2 points de stress pour réduire de 1 la difficulté de votre prochain test de Discrétion ou de Magouilles."}
+    ]
+  }
+};
+</script>
+
+<script>
+/* ===== MOTEUR DES ARBRES DE TALENTS (aucune donnée de jeu ici ; données dans TALENT_TREES) ===== */
+const TT_CFG = {
+    achatsEnJeu: true,                 // false = achats de talents bloqués en mode Jeu
+    remboursementRetraitSpec: true     // false = version stricte : retirer une spécialisation ne rend pas l'XP des talents
+};
+const TT = { NW: 176, NH: 88, CW: 216, RH: 136, P: 20 };
+TT.W = 2 * TT.P + 3 * TT.CW + TT.NW;
+TT.H = 2 * TT.P + 4 * TT.RH + TT.NH;
+const TT_LBL = { acquis: 'Acquis', disponible: 'Disponible', verrouille: 'Verrouillé', xp: 'XP insuffisant' };
+let ttSpec = null, ttSel = null, ttV = { x: 0, y: 0, k: 1 }, ttMoved = false, ttNeedFit = true, ttMaps = {};
+const $t = id => document.getElementById(id);
+
+function ttMap(k) {
+    if (!ttMaps[k]) {
+        const A = {}, N = {};
+        TALENT_TREES[k].talents.forEach(n => { N[n.id] = n; A[n.id] = []; });
+        TALENT_TREES[k].talents.forEach(n => n.liens.forEach(o => { A[n.id].push(o); A[o].push(n.id); }));
+        ttMaps[k] = { A: A, N: N };
+    }
+    return ttMaps[k];
+}
+const ttGot = k => (talentTrees[k] = Array.isArray(talentTrees[k]) ? talentTrees[k] : []);
+const ttSpent = k => TALENT_TREES[k].talents.filter(n => ttGot(k).includes(n.id)).reduce((a, n) => a + n.cout, 0);
+const ttAvail = () => parseInt(document.getElementById('xp-disp-val').value) || 0;
+const ttRank = n => TALENT_TREES[ttSpec].talents.filter(m => m.talent === n.talent && ttGot(ttSpec).includes(m.id)).length;
+const ttName = n => n.nom + ' (ligne ' + n.pos[0] + ', col. ' + n.pos[1] + ')';
+const ttDesc = t => t.replace(/\[B\]/g, '<i class="tt-bd"></i>');
+
+// Appelées par le code existant de la fiche
+function getTreesXP() {
+    let total = 0;
+    Object.keys(talentTrees).forEach(k => { if (TALENT_TREES[k] && Array.isArray(talentTrees[k])) total += ttSpent(k); });
+    return total;
+}
+function ttDrop(k) { if (TT_CFG.remboursementRetraitSpec) delete talentTrees[k]; }
+
+// Règle d'achat : 1re ligne, ou case reliée à une case déjà acquise
+function ttState(n) {
+    if (ttGot(ttSpec).includes(n.id)) return 'acquis';
+    const A = ttMap(ttSpec).A;
+    if (n.pos[0] !== 1 && !A[n.id].some(i => ttGot(ttSpec).includes(i))) return 'verrouille';
+    return ttAvail() >= n.cout ? 'disponible' : 'xp';
+}
+
+function renderTrees() {
+    const list = selectedSpecs.filter(k => TALENT_TREES[k]);
+    if (!list.includes(ttSpec)) { ttSpec = list[0] || null; ttSel = null; ttNeedFit = true; }
+    const has = !!ttSpec;
+    $t('tt-main').style.display = has ? '' : 'none';
+    $t('tt-empty').style.display = has ? 'none' : '';
+    if (!has) {
+        const dispo = Object.keys(TALENT_TREES).map(k => TALENT_TREES[k].nom).join(', ');
+        $t('tt-empty').textContent = 'Aucun arbre disponible pour vos spécialisations. Arbres disponibles : ' + dispo + '.';
+        return;
+    }
+    $t('tt-tabs').innerHTML = list.map(k => '<button type="button" data-k="' + k + '" class="' + (k === ttSpec ? 'on' : '') + '">' + TALENT_TREES[k].nom + '</button>').join('');
+    const t = TALENT_TREES[ttSpec].talents, N = ttMap(ttSpec).N;
+    const pos = n => [(n.pos[1] - 1) * TT.CW + TT.P, (n.pos[0] - 1) * TT.RH + TT.P];
+    let svg = '';
+    t.forEach(n => n.liens.forEach(o => {
+        const a = pos(n), b = pos(N[o]), on = ttGot(ttSpec).includes(n.id) && ttGot(ttSpec).includes(o);
+        svg += '<line x1="' + (a[0] + TT.NW / 2) + '" y1="' + (a[1] + TT.NH / 2) + '" x2="' + (b[0] + TT.NW / 2) + '" y2="' + (b[1] + TT.NH / 2) + '" stroke="' + (on ? '#4f7a3a' : '#7b7561') + '" stroke-width="7"/>';
+    }));
+    $t('tt-st').innerHTML = '<svg width="' + TT.W + '" height="' + TT.H + '">' + svg + '</svg>' + t.map(n => {
+        const p = pos(n), s = ttState(n), r = ttRank(n);
+        return '<div class="tt-n ' + n.type + ' ' + s + (ttSel === n.id ? ' sel' : '') + '" data-id="' + n.id + '" style="left:' + p[0] + 'px;top:' + p[1] + 'px">'
+            + '<div class="h">' + n.nom + '</div>'
+            + '<div class="b"><span>' + (n.type === 'actif' ? 'Actif' : 'Passif') + (n.classe ? ' · rang ' + r : '') + '</span><span>' + TT_LBL[s] + '</span></div>'
+            + '<div class="c">' + n.cout + ' XP</div></div>';
+    }).join('');
+    $t('tt-sp').textContent = ttSpent(ttSpec);
+    $t('tt-av').textContent = ttAvail();
+    $t('tt-av').className = ttAvail() < 0 ? 'neg' : '';
+    ttDetail();
+    if (ttNeedFit && $t('tt-vp').clientWidth) { ttFit(); ttNeedFit = false; }
+}
+
+function ttDetail() {
+    const d = $t('tt-dt');
+    if (!ttSel || !ttMap(ttSpec).N[ttSel]) { ttSel = null; d.innerHTML = '<p>Touche un talent pour voir son détail. Glisse pour déplacer l\'arbre ; boutons +/− pour zoomer.</p>'; return; }
+    const m = ttMap(ttSpec), n = m.N[ttSel], s = ttState(n); let why;
+    if (s === 'verrouille') why = 'Verrouillé : achetez d\'abord un talent relié à celui-ci : ' + m.A[n.id].map(i => ttName(m.N[i])).join(', ') + '.';
+    else if (s === 'xp') why = 'XP insuffisant : il manque ' + (n.cout - ttAvail()) + ' XP.';
+    else if (s === 'acquis') why = 'Talent acquis.';
+    else why = n.pos[0] === 1 ? 'Accessible : talent de la première ligne.' : 'Accessible : relié à un talent acquis.';
+    d.innerHTML = '<div><h2>' + n.nom + ' <span class="tt-t ' + n.type + '">' + (n.type === 'actif' ? 'Actif' : 'Passif') + '</span></h2>'
+        + '<p>' + ttDesc(n.description) + '</p>'
+        + '<p class="m">Coût : ' + n.cout + ' XP' + (n.classe ? ' · talent à rangs (rang actuel : ' + ttRank(n) + ')' : '') + '</p>'
+        + '<p class="w">' + why + '</p></div>'
+        + '<button type="button" id="tt-buy"' + (s === 'disponible' ? '' : ' disabled') + '>' + (s === 'acquis' ? 'Acquis' : 'Acheter (' + n.cout + ' XP)') + '</button>';
+    $t('tt-buy').onclick = () => ttBuy(n.id);
+}
+
+function ttBuy(id) {
+    if (!TT_CFG.achatsEnJeu && currentMode === 'game') { showMessage('Les achats de talents sont désactivés en mode Jeu.'); return; }
+    if (ttState(ttMap(ttSpec).N[id]) !== 'disponible') return;
+    ttGot(ttSpec).push(id);
+    calculateXP();   // recalcule l'XP puis réaffiche les arbres
+    saveAll();
+}
+
+// ---- Zoom et déplacement ----
+const ttVp = $t('tt-vp');
+function ttApply() { $t('tt-st').style.transform = 'translate(' + ttV.x + 'px,' + ttV.y + 'px) scale(' + ttV.k + ')'; }
+function ttFit() { const k = Math.min(ttVp.clientWidth / TT.W, ttVp.clientHeight / TT.H, 1); ttV = { k: k, x: (ttVp.clientWidth - TT.W * k) / 2, y: (ttVp.clientHeight - TT.H * k) / 2 }; ttApply(); }
+function ttZoom(f, cx, cy) { const k = Math.min(2, Math.max(.3, ttV.k * f)); ttV.x = cx - (cx - ttV.x) * k / ttV.k; ttV.y = cy - (cy - ttV.y) * k / ttV.k; ttV.k = k; ttApply(); }
+ttVp.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); const r = ttVp.getBoundingClientRect(); ttZoom(e.deltaY < 0 ? 1.1 : 1 / 1.1, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+let ttDr = null;
+ttVp.addEventListener('pointerdown', e => { ttDr = { x: e.clientX, y: e.clientY, vx: ttV.x, vy: ttV.y }; ttMoved = false; });
+addEventListener('pointermove', e => { if (!ttDr) return; const dx = e.clientX - ttDr.x, dy = e.clientY - ttDr.y; if (Math.abs(dx) + Math.abs(dy) > 5) ttMoved = true; if (ttMoved) { ttV.x = ttDr.vx + dx; ttV.y = ttDr.vy + dy; ttApply(); } });
+addEventListener('pointerup', () => { ttDr = null; });
+ttVp.addEventListener('click', e => { if (ttMoved) return; const el = e.target.closest('.tt-n'); if (el) { ttSel = el.dataset.id; renderTrees(); } });
+addEventListener('resize', () => { if (ttSpec) ttFit(); });
+
+// ---- Commandes ----
+$t('tt-tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { ttSpec = b.dataset.k; ttSel = null; ttNeedFit = true; renderTrees(); } });
+$t('tt-zp').onclick = () => ttZoom(1.2, ttVp.clientWidth / 2, ttVp.clientHeight / 2);
+$t('tt-zm').onclick = () => ttZoom(1 / 1.2, ttVp.clientWidth / 2, ttVp.clientHeight / 2);
+$t('tt-fit').onclick = ttFit;
+$t('tt-rs').onclick = () => {
+    if (!ttSpec) return;
+    askConfirm('Réinitialiser l\'arbre ' + TALENT_TREES[ttSpec].nom + ' ? Les ' + ttSpent(ttSpec) + ' XP dépensés sont rendus.', () => { talentTrees[ttSpec] = []; calculateXP(); saveAll(); });
+};
+
+// ---- Démarrage ----
+calculateXP();
 </script>
 </body>
 </html>
