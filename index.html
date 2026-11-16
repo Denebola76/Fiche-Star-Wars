@@ -196,23 +196,50 @@
         .player-input input { border: none; background: transparent; text-align: right; font-size: 16px; font-weight: bold; width: 100%; outline: none; }
         .player-input label { display: block; font-size: 0.6rem; color: #666; text-transform: uppercase; }
 
-        /* STATUS TOP BLOCKS */
-        .status-row { display: grid; grid-template-columns: 1.2fr 2fr 2fr 2fr; gap: 10px; margin-bottom: 20px; }
-        .status-box { background: #fff; border: 2px solid var(--sw-red-dark); position: relative; border-radius: 4px; overflow: hidden; }
-        .status-box::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 18px;
-            background: var(--sw-red-dark); z-index: 1;
+        /* BLOCS D'ÉTAT (encaissement, blessures, stress, défense) */
+        .status-row { display: grid; grid-template-columns: 1fr 1.7fr 1.7fr 1.4fr; gap: 10px; margin-bottom: 20px; }
+        .status-box { background: #fff; border: 2px solid var(--sw-red-dark); position: relative; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+        .status-title {
+            position: relative; background: var(--sw-red-dark); color: #fff; text-align: center;
+            font-size: 0.65rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;
+            min-height: 28px; padding: 0 34px; display: flex; align-items: center; justify-content: center;
         }
-        .status-title { position: relative; z-index: 2; color: #fff; text-align: center; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; padding: 2px 0; letter-spacing: 0.5px; }
-        .status-content { display: flex; height: 48px; align-items: center; justify-content: center; }
-        .status-content input { width: 100%; height: 100%; border: none; text-align: center; font-size: 1.5rem; font-weight: bold; outline: none; background: transparent; }
-        .status-split { display: grid; grid-template-columns: 1fr 1fr; height: 100%; width: 100%; }
-        .split-cell { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; position: relative; }
+        .status-content { display: flex; flex: 1; min-height: 64px; align-items: center; justify-content: center; }
+        .stat-tap { background: none; border: none; padding: 0; margin: 0; font: inherit; color: inherit; width: 100%; cursor: pointer; touch-action: manipulation; }
+        .stat-big { font-size: 1.9rem; font-weight: bold; line-height: 1; }
+        .stat-hint { display: block; font-size: 0.55rem; color: #888; text-transform: uppercase; margin-top: 3px; }
+        .status-split { display: grid; grid-template-columns: 1fr 1fr; flex: 1; width: 100%; }
+        .split-cell { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; position: relative; background: none; border: none; padding: 0; font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; min-height: 64px; }
         .split-cell:first-child { border-right: 1px solid #ccc; }
-        .split-cell input { width: 100%; height: 28px; font-size: 1.2rem; }
-        .split-label { font-size: 0.55rem; font-weight: bold; text-transform: uppercase; width: 100%; text-align: center; padding: 2px 0; background: #eee; color: #444; }
+        .split-cell .stat-big { flex: 1; display: flex; align-items: center; }
+        .split-label { font-size: 0.55rem; font-weight: bold; text-transform: uppercase; width: 100%; text-align: center; padding: 3px 0; background: #eee; color: #444; }
         .blue-label { background: var(--sw-blue-accent); color: #fff; }
         .red-label { background: var(--sw-red-dark); color: #fff; }
+
+        /* compteurs actuels : blessures et stress */
+        .cur-body { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 8px 8px 4px 8px; }
+        .cur-body input { flex: 1; min-width: 0; height: 56px; border: none; background: transparent; text-align: center; font-size: 2.2rem; font-weight: bold; outline: none; }
+        .step-btn {
+            flex: none; min-width: 56px; min-height: 56px; border: none; border-radius: 10px; background: var(--sw-blue-accent); color: #fff;
+            font-size: 1.9rem; font-weight: bold; line-height: 1; font-family: inherit; cursor: pointer;
+            touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+        }
+        .step-btn:active { filter: brightness(0.85); }
+        .step-btn.minus { background: #8a8570; }
+        .thresh-btn {
+            margin: 0 8px 8px 8px; min-height: 40px; border: 1px solid #bbb; border-radius: 8px; background: #f3f0e6; color: #444;
+            font-family: inherit; font-size: 0.8rem; font-weight: bold; cursor: pointer; touch-action: manipulation;
+        }
+        .thresh-btn b { font-size: 1.1rem; margin: 0 4px; }
+        .thresh-btn .info { color: var(--sw-blue-accent); }
+        .reset-cur {
+            position: absolute; right: 0; top: 0; width: 34px; height: 28px; border: none; background: rgba(255,255,255,0.18); color: #fff;
+            font-size: 1rem; cursor: pointer; touch-action: manipulation; font-family: inherit;
+        }
+        .cur-box.warn { border-color: #c77d1a; }
+        .cur-box.warn .cur-body input { color: #a15f00; }
+        .cur-box.over { border-color: #b3261e; background: #fdeeed; }
+        .cur-box.over .cur-body input, .cur-box.over .thresh-btn b { color: #b3261e; }
 
         /* CARACTÉRISTIQUES */
         .carac-section { background: var(--sw-red-dark); border-radius: 12px; padding: 8px 10px 12px 10px; margin-bottom: 20px; }
@@ -222,6 +249,8 @@
         .carac-circle { width: 48px; height: 48px; background: #fff; border: 2px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .carac-circle input { width: 38px; border: none; background: transparent; text-align: center; font-size: 1.5rem; font-weight: bold; outline: none; }
         .carac-label { color: #fff; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; margin-top: 4px; text-align: center; }
+        .carac-eff { color: #f1ebd9; font-size: 0.6rem; font-weight: bold; min-height: 13px; margin-top: 2px; text-align: center; }
+        .carac-eff.on { color: #ffe08a; }
         
         /* LÉGENDE DES RANGS */
         .legend-bar {
@@ -283,18 +312,15 @@
         .die-g { color: #2ecc71; text-shadow: 1px 1px 0 #000; font-weight: bold; }
         .die-y { color: #f1c40f; text-shadow: 1px 1px 0 #000; font-weight: bold; }
 
-        /* ARMES & FOOTER */
+        /* BLOCS GÉNÉRIQUES & FOOTER */
         .section-block { margin-top: 20px; }
         .block-title { background: var(--sw-red-dark); color: #fff; text-align: center; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; padding: 4px 0; letter-spacing: 2px; border-radius: 3px 3px 0 0; }
-        .weapons-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; background: #fff; }
-        .weapons-table th { font-weight: normal; color: #555; text-transform: uppercase; font-size: 0.65rem; border-bottom: 1px solid #999; padding: 6px 4px; }
-        .weapons-table td { border-bottom: 1px dashed #ccc; padding: 2px; }
-        .weapons-table input { width: 100%; border: none; background: transparent; padding: 6px 4px; font-size: 16px; }
 
         .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
         .text-box-area { background: #fff; border: 1px solid #ccc; height: 120px; width: 100%; padding: 8px; font-family: inherit; font-size: 16px; resize: vertical; border-top: none; }
         .inventory-header-inputs { display: flex; justify-content: space-between; background: #eee; padding: 6px 8px; font-size: 0.7rem; font-weight: bold; border: 1px solid #ccc; border-bottom: none; }
         .inventory-header-inputs input { width: 60px; border: none; border-bottom: 1px solid #777; background: transparent; text-align: center; font-weight: bold; font-size: 16px; }
+        .enc-line { background: #eee; padding: 0 8px 6px 8px; font-size: 0.7rem; color: #555; border: 1px solid #ccc; border-top: none; border-bottom: none; }
 
         /* FOOTER DE GESTION XP */
         .sheet-footer { 
@@ -373,6 +399,10 @@
           .player-input { text-align:center; margin-top: 5px; }
           .player-input input { text-align:center; }
           .status-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+          .status-row .box-wound { grid-column: 1 / -1; order: 1; }
+          .status-row .box-stress { grid-column: 1 / -1; order: 2; }
+          .status-row .box-soak { order: 3; }
+          .status-row .box-def { order: 4; }
           .carac-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
           .skills-layout, .bottom-grid { grid-template-columns:1fr; gap:12px; }
           .skill-row { padding: 4px 0; }
@@ -406,7 +436,7 @@
         }
         input, select, textarea { font-size: 16px; touch-action: manipulation; }
         input:not([type="checkbox"]), textarea { -webkit-appearance: none; appearance: none; border-radius: 0; }
-        .xp-container input, .status-content input, .split-cell input, .carac-circle input { border-radius: 0; }
+        .xp-container input, .cur-body input, .carac-circle input { border-radius: 0; }
         button { font-family: inherit; }
 
         .mode-btn { min-height: 44px; }
@@ -453,12 +483,87 @@
             .rank-shape.espece { transform: rotate(45deg) scale(0.8); }
             .title-des { width: 40px; }
             .skill-pool-display { width: 40px; font-size: 0.85rem; }
-            .status-content { height: 58px; }
-            .split-cell input { height: 38px; }
             .carac-circle input { width: 100%; height: 100%; }
-            .weapons-table input { padding: 12px 6px; }
             .inventory-header-inputs input { min-height: 36px; width: 56px; }
         }
+
+        /* ===== Équipement : cartes armes et armures ===== */
+        .block-title-flex { display: flex; justify-content: space-between; align-items: center; padding: 3px 6px 3px 12px; }
+        .gear-add {
+            min-height: 36px; padding: 0 14px; border: none; border-radius: 6px; background: var(--sw-green-olive); color: #fff;
+            font-weight: bold; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; touch-action: manipulation;
+        }
+        .gear-list { display: flex; flex-direction: column; gap: 8px; background: #fff; border: 1px solid #ccc; border-top: none; padding: 8px; border-radius: 0 0 4px 4px; }
+        .gear-empty { color: #888; font-size: 0.8rem; text-align: center; padding: 10px 6px; }
+        .gear-card { border: 2px solid #8a8570; border-left-width: 8px; border-radius: 6px; padding: 8px 10px; background: var(--bg-paper); }
+        .gear-card.weapon { border-left-color: var(--sw-red-dark); }
+        .gear-card.armor { border-left-color: var(--sw-green-olive); }
+        .gear-card.armor.worn { background: #e3efd6; border-color: #4f7a3a; }
+        .gc-head { display: flex; align-items: center; gap: 8px; }
+        .gc-title { flex: 1; min-width: 0; }
+        .gc-name { display: block; font-size: 1rem; overflow-wrap: anywhere; }
+        .gc-comp { font-size: 0.72rem; color: #6f6955; }
+        .gc-pool { font-size: 1.15rem; white-space: nowrap; display: flex; gap: 2px; }
+        .gc-del { flex: none; min-width: 44px; min-height: 44px; background: none; border: none; font-size: 1.6rem; color: #888; line-height: 1; }
+        .gc-wear {
+            flex: none; min-height: 44px; padding: 0 12px; border-radius: 22px; border: 2px solid var(--sw-green-olive);
+            background: #fff; color: var(--sw-green-olive); font-weight: bold; font-size: 0.78rem;
+        }
+        .gc-wear[aria-pressed="true"] { background: var(--sw-green-olive); color: #fff; }
+        .gc-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
+        .gc-stats.three { grid-template-columns: repeat(3, 1fr); }
+        .pill { background: #fff; border: 1px solid #bfae8f; border-radius: 6px; text-align: center; padding: 4px 2px; min-width: 0; }
+        .pill i { display: block; font-style: normal; font-size: 0.55rem; text-transform: uppercase; color: #777; }
+        .pill b { font-size: 1.1rem; overflow-wrap: anywhere; }
+        .pill.txt b { font-size: 0.85rem; }
+        .pill small { display: block; font-size: 0.6rem; color: #777; }
+        .gc-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+        .gc-tag { background: #e8e0c6; border: 1px solid #bfae8f; border-radius: 10px; padding: 2px 8px; font-size: 0.72rem; }
+
+        /* fenêtre catalogue */
+        .gear-modal { max-width: 520px; max-height: 88vh; max-height: 88dvh; display: flex; flex-direction: column; }
+        .gm-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+        .gm-tabs button { flex: 1; min-height: 44px; border: 1px solid var(--sw-gray-dark); background: #e8e0c6; border-radius: 6px; font-weight: bold; color: var(--sw-gray-dark); }
+        .gm-tabs button.on { background: var(--sw-red-dark); color: #fff; border-color: var(--sw-red-dark); }
+        input.gm-search, .gm-form input[type="text"], .gm-form input[type="number"], .gm-form select {
+            width: 100%; min-height: 44px; border: 1px solid #999; border-radius: 6px; padding: 6px 10px; background: #fff; font-family: inherit;
+        }
+        input.gm-search { margin-bottom: 8px; }
+        .gm-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+        .gm-chips button { flex: none; min-height: 36px; padding: 0 12px; border-radius: 18px; border: 1px solid #8a8570; background: #fff; color: var(--sw-gray-dark); font-size: 0.78rem; font-weight: bold; }
+        .gm-chips button.on { background: var(--sw-blue-accent); color: #fff; border-color: #3a7d8a; }
+        .gm-list { overflow-y: auto; flex: 1; min-height: 140px; margin-bottom: 10px; -webkit-overflow-scrolling: touch; }
+        .gm-item {
+            display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 8px;
+            width: 100%; text-align: left; min-height: 52px; padding: 8px 10px; border: 1px solid #bfae8f; border-radius: 6px;
+            background: #fff; margin-bottom: 6px; color: var(--sw-gray-dark);
+        }
+        .gm-item:active { background: #fff6d8; }
+        .gm-n { font-weight: bold; }
+        .gm-p { font-size: 0.75rem; color: #6f6955; }
+        .gm-s { width: 100%; font-size: 0.75rem; color: #666; }
+        .gm-none { text-align: center; color: #888; padding: 16px 6px; font-size: 0.85rem; }
+        .gm-form { overflow-y: auto; flex: 1; margin-bottom: 10px; -webkit-overflow-scrolling: touch; }
+        .gm-form label { display: block; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: #555; margin: 10px 0 3px; }
+        .gm-form label.chk { display: flex; align-items: center; gap: 10px; text-transform: none; font-size: 0.85rem; min-height: 44px; }
+        .gm-form label.chk input { width: 24px; height: 24px; }
+        .gm-form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* fenêtre détail d'une valeur */
+        .sm-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 9px 0; border-bottom: 1px dotted #aaa; font-size: 0.95rem; }
+        .sm-line small { color: #7a735d; text-transform: uppercase; font-size: 0.6rem; margin-right: 8px; font-weight: bold; }
+        .sm-line b { font-size: 1.05rem; }
+        .sm-none { color: #888; font-size: 0.85rem; padding: 8px 0; }
+        .sm-total { display: flex; justify-content: space-between; align-items: baseline; font-size: 1.4rem; font-weight: bold; padding: 12px 0 6px; color: var(--sw-red-dark); }
+        .sm-manual { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0 14px; font-size: 0.85rem; font-weight: bold; }
+        .sm-manual .stepper { display: flex; align-items: center; gap: 8px; }
+        .sm-manual .stepper b { min-width: 36px; text-align: center; font-size: 1.3rem; }
+        .sm-manual .step-btn { min-width: 52px; min-height: 52px; }
+
+        /* fenêtre de choix */
+        .choice-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .choice-btn { min-height: 52px; border: 1px solid #8a8570; background: #fff; border-radius: 8px; font-size: 0.95rem; font-weight: bold; color: var(--sw-gray-dark); text-align: left; padding: 0 14px; }
+        .choice-btn:active { background: #fff6d8; }
 
         /* ===== Arbres de talents ===== */
         .tt { margin-top: 15px; }
@@ -508,20 +613,26 @@
         .tt-ch { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1.05rem; }
         .tt-ch .rk { background: #2e6b1f; color: #fff; border-radius: 12px; padding: 1px 10px; font-weight: 800; font-size: .85rem; }
         .tt-c p { margin: 4px 0 0; font-size: .95rem; }
+        .tt-c p.fx { color: #0b6e8c; font-weight: 600; font-size: .85rem; }
         @media (pointer: coarse) { .tt-bar button, #tt-tabs button, #tt-buy { min-height: 44px; padding: 6px 14px; } }
         #tt-dt { background: var(--bg-paper); border: 2px solid #8a8570; border-top: 0; padding: 10px 14px; display: flex; gap: 16px; justify-content: space-between; align-items: flex-start; min-height: 110px; font-size: .9rem; }
         #tt-dt h2 { margin: 0 0 4px; font-size: 1.05rem; }
         #tt-dt p { margin: 3px 0; max-width: 70ch; }
         #tt-dt .m { color: #6f6955; font-size: .8rem; }
         #tt-dt .w { font-weight: 600; }
+        #tt-dt .fx { color: #0b6e8c; font-weight: 600; font-size: .85rem; }
         #tt-buy:disabled { opacity: .5; cursor: default; }
         .tt-t { font-size: 12px; color: #fff; padding: 1px 7px; border-radius: 3px; vertical-align: 2px; }
         .tt-t.actif { background: #8c2a20; }
         .tt-t.passif { background: #27344f; }
+        .tt-sd { display: inline-block; width: .8em; height: .8em; background: #222; border: 1px solid #000; vertical-align: -1px; }
         .tt-bd { display: inline-block; width: .8em; height: .8em; background: #6fb3d6; border: 1px solid #2b6b8a; vertical-align: -1px; }
         #tt-empty { font-size: .85rem; color: #6f6955; padding: 6px 0; }
     </style>
 </head>
+
+<body>
+
 <body>
 
 <div class="mode-bar">
@@ -650,54 +761,69 @@
         </div>
     </div>
 
-    <!-- BLOCS SUPÉRIEURS -->
+
+    <!-- BLOCS D'ÉTAT -->
     <div class="status-row">
-        <div class="status-box">
+        <div class="status-box box-soak">
             <div class="status-title">Encaissement</div>
-            <div class="status-content"><input type="number" id="st-soak" value="0"></div>
-        </div>
-        <div class="status-box">
-            <div class="status-title">Blessures</div>
             <div class="status-content">
-                <div class="status-split">
-                    <div class="split-cell"><input type="number" id="st-w-thresh" value="0"><div class="split-label">Seuil</div></div>
-                    <div class="split-cell"><input type="number" id="st-w-curr" value="0"><div class="split-label blue-label">Actuelles</div></div>
-                </div>
+                <button type="button" class="stat-tap" data-stat="soak" aria-label="Détail de l'encaissement"><span class="stat-big" id="st-soak-txt">0</span><span class="stat-hint">détail ⓘ</span></button>
             </div>
+            <input type="hidden" id="st-soak" value="0">
         </div>
-        <div class="status-box">
-            <div class="status-title">Stress</div>
-            <div class="status-content">
-                <div class="status-split">
-                    <div class="split-cell"><input type="number" id="st-s-thresh" value="0"><div class="split-label">Seuil</div></div>
-                    <div class="split-cell"><input type="number" id="st-s-curr" value="0"><div class="split-label blue-label">Actuel</div></div>
-                </div>
+
+        <div class="status-box cur-box box-wound" id="box-wound">
+            <div class="status-title">Blessures<button type="button" class="reset-cur" data-target="st-w-curr" aria-label="Remettre les blessures à zéro">↺</button></div>
+            <div class="cur-body">
+                <button type="button" class="step-btn minus" data-target="st-w-curr" data-d="-1" aria-label="Moins une blessure">−</button>
+                <input type="number" id="st-w-curr" value="0" min="0" inputmode="numeric" aria-label="Blessures actuelles">
+                <button type="button" class="step-btn" data-target="st-w-curr" data-d="1" aria-label="Plus une blessure">+</button>
             </div>
+            <button type="button" class="thresh-btn" data-stat="wound">Seuil <b id="st-w-thresh-txt">0</b> <span class="info">détail ⓘ</span></button>
+            <input type="hidden" id="st-w-thresh" value="0">
         </div>
-        <div class="status-box">
+
+        <div class="status-box cur-box box-stress" id="box-stress">
+            <div class="status-title">Stress<button type="button" class="reset-cur" data-target="st-s-curr" aria-label="Remettre le stress à zéro">↺</button></div>
+            <div class="cur-body">
+                <button type="button" class="step-btn minus" data-target="st-s-curr" data-d="-1" aria-label="Moins un stress">−</button>
+                <input type="number" id="st-s-curr" value="0" min="0" inputmode="numeric" aria-label="Stress actuel">
+                <button type="button" class="step-btn" data-target="st-s-curr" data-d="1" aria-label="Plus un stress">+</button>
+            </div>
+            <button type="button" class="thresh-btn" data-stat="stress">Seuil <b id="st-s-thresh-txt">0</b> <span class="info">détail ⓘ</span></button>
+            <input type="hidden" id="st-s-thresh" value="0">
+        </div>
+
+        <div class="status-box box-def">
             <div class="status-title">Défense</div>
-            <div class="status-content">
-                <div class="status-split">
-                    <div class="split-cell"><input type="number" id="st-def-range" value="0"><div class="split-label red-label">Dist.</div></div>
-                    <div class="split-cell"><input type="number" id="st-def-melee" value="0"><div class="split-label blue-label">CàC</div></div>
-                </div>
+            <div class="status-split">
+                <button type="button" class="split-cell" data-stat="defR" aria-label="Détail de la défense à distance"><span class="stat-big" id="st-def-range-txt">0</span><div class="split-label red-label">Dist.</div></button>
+                <button type="button" class="split-cell" data-stat="defM" aria-label="Détail de la défense au corps à corps"><span class="stat-big" id="st-def-melee-txt">0</span><div class="split-label blue-label">CàC</div></button>
             </div>
+            <input type="hidden" id="st-def-range" value="0">
+            <input type="hidden" id="st-def-melee" value="0">
         </div>
+        <input type="hidden" id="bonus-soak" value="0">
+        <input type="hidden" id="bonus-wound" value="0">
+        <input type="hidden" id="bonus-stress" value="0">
+        <input type="hidden" id="bonus-defR" value="0">
+        <input type="hidden" id="bonus-defM" value="0">
     </div>
+
 
     <!-- CARACTÉRISTIQUES -->
     <div class="carac-section">
         <div class="carac-section-title">Caractéristiques</div>
         <div class="carac-grid">
-            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-vig" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Vigueur</div></div>
-            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-ag" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Agilité</div></div>
-            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-int" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Intel.</div></div>
-            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-ru" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Ruse</div></div>
-            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-vol" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Volonté</div></div>
-            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-pre" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Présence</div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-vig" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Vigueur</div><div class="carac-eff" id="ce-vig"></div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-ag" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Agilité</div><div class="carac-eff" id="ce-ag"></div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-int" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Intel.</div><div class="carac-eff" id="ce-int"></div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-ru" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Ruse</div><div class="carac-eff" id="ce-ru"></div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-vol" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Volonté</div><div class="carac-eff" id="ce-vol"></div></div>
+            <div class="carac-wrapper"><div class="carac-circle"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" id="c-pre" class="creation-lock" value="2" min="1" max="6"></div><div class="carac-label">Présence</div><div class="carac-eff" id="ce-pre"></div></div>
         </div>
     </div>
-    
+
     <!-- LÉGENDE DYNAMIQUE -->
     <div class="legend-bar">
         <div class="legend-item">
@@ -1159,20 +1285,7 @@
                 </div>
 
                 <div class="skill-row" data-carac="int" data-id="guerre">
-                    <div class="skill-name">Guerre <span>(Int)</span></div>
-                    <div class="skill-career"><input type="checkbox"></div>
-                    <div class="skill-ranks" data-score="0">
-                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
-                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
-                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
-                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
-                        <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
-                    </div>
-                    <div class="skill-pool-display"></div>
-                </div>
-
-                <div class="skill-row" data-carac="int" data-id="lore">
-                    <div class="skill-name">Lore / Savoirs <span>(Int)</span></div>
+                    <div class="skill-name">Stratégie <span>(Int)</span></div>
                     <div class="skill-career"><input type="checkbox"></div>
                     <div class="skill-ranks" data-score="0">
                         <div class="shape-container"><div class="rank-shape none"><span>-</span></div></div>
@@ -1226,36 +1339,19 @@
         </div>
     </div>
 
-    <!-- BLOC ARMES -->
+
+    <!-- ARMES -->
     <div class="section-block">
-        <div class="block-title">Armes</div>
-        <div style="overflow-x: auto;">
-            <table class="weapons-table">
-                <thead>
-                    <tr>
-                        <th style="width: 30%;">Arme</th>
-                        <th style="width: 20%;">Dégâts</th>
-                        <th style="width: 20%;">Portée</th>
-                        <th style="width: 30%;">Spécial</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="text" id="w1-n"></td>
-                        <td><input type="text" id="w1-d"></td>
-                        <td><input type="text" id="w1-p"></td>
-                        <td><input type="text" id="w1-sp"></td>
-                    </tr>
-                    <tr>
-                        <td><input type="text" id="w2-n"></td>
-                        <td><input type="text" id="w2-d"></td>
-                        <td><input type="text" id="w2-p"></td>
-                        <td><input type="text" id="w2-sp"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <div class="block-title block-title-flex"><span>Armes</span><button type="button" class="gear-add" data-kind="arme">+ Ajouter</button></div>
+        <div class="gear-list" id="gear-weapons-list"></div>
     </div>
+
+    <!-- ARMURES -->
+    <div class="section-block">
+        <div class="block-title block-title-flex"><span>Armures</span><button type="button" class="gear-add" data-kind="armure">+ Ajouter</button></div>
+        <div class="gear-list" id="gear-armors-list"></div>
+    </div>
+
 
     <!-- BLOC ÉQUIPEMENT & TALENTS -->
     <div class="bottom-grid">
@@ -1265,6 +1361,7 @@
                 <span>Crédits: <input type="text" id="inv-credits" placeholder="0"></span>
                 <span>Encobr.: <input type="number" id="inv-enc-curr" value="0"> / <input type="number" id="inv-enc-max" value="0"></span>
             </div>
+            <div class="enc-line" id="gear-enc"></div>
             <textarea class="text-box-area" id="inv-items" placeholder="Objets & équipement..."></textarea>
         </div>
         <div>
@@ -1277,6 +1374,7 @@
             <textarea class="text-box-area" id="talents-list" style="height: 120px;" placeholder="Capacités, talents, pouvoirs..."></textarea>
         </div>
     </div>
+
 
     <!-- ARBRES DE TALENTS -->
     <div class="tt" id="tt-section">
@@ -1345,6 +1443,59 @@
     </div>
 </div>
 
+
+<!-- CATALOGUE ARMES / ARMURES -->
+<div class="modal-overlay" id="gearModal">
+    <div class="modal-box gear-modal">
+        <div class="modal-title" id="gm-title">Ajouter</div>
+        <div class="gm-tabs" id="gm-tabs">
+            <button type="button" data-k="arme">Armes</button>
+            <button type="button" data-k="armure">Armures</button>
+        </div>
+        <input type="search" class="gm-search" placeholder="Rechercher…" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="gm-chips" id="gm-chips"></div>
+        <div class="gm-list" id="gm-list"></div>
+        <div class="gm-form" id="gm-custom" style="display:none"></div>
+        <div class="modal-buttons">
+            <button type="button" class="modal-btn cancel" id="gm-close">Fermer</button>
+            <button type="button" class="modal-btn" id="gm-custom-btn" style="background:#e8e0c6;color:#3a3a3a">✎ Personnalisée</button>
+            <button type="button" class="modal-btn confirm" id="gm-custom-ok" style="display:none">Ajouter</button>
+        </div>
+    </div>
+</div>
+
+<!-- DÉTAIL D'UNE VALEUR -->
+<div class="modal-overlay" id="statModal">
+    <div class="modal-box">
+        <div class="modal-title" id="sm-title">Détail</div>
+        <div id="sm-lines"></div>
+        <div class="sm-total"><span>Total</span><span id="sm-total">0</span></div>
+        <div class="sm-manual">
+            <span>Bonus manuel</span>
+            <div class="stepper">
+                <button type="button" class="step-btn minus" id="sm-minus" data-d="-1" aria-label="Moins un">−</button>
+                <b id="sm-manual-val">0</b>
+                <button type="button" class="step-btn" id="sm-plus" data-d="1" aria-label="Plus un">+</button>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button type="button" class="modal-btn confirm" id="sm-close">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- CHOIX (talents à option) -->
+<div class="modal-overlay" id="choiceModal">
+    <div class="modal-box">
+        <div class="modal-title" id="choice-title">Choisir</div>
+        <div class="choice-list" id="choice-list"></div>
+        <div class="modal-buttons">
+            <button type="button" class="modal-btn cancel" id="choice-cancel">Annuler</button>
+        </div>
+    </div>
+</div>
+
+
 <div class="modal-overlay" id="msgModal">
     <div class="modal-box">
         <div class="modal-title">Information</div>
@@ -1362,6 +1513,8 @@
     let currentFilter = 'all';    
     let selectedSpecs = [];
     let talentTrees = {};   // { cléSpécialisation: [ids de talents achetés] }
+    let talentChoices = {}; // { cléSpécialisation: { idCase: clé de caractéristique } } pour les talents à option
+    let gear = [];          // armes et armures de la fiche
     let lastSheetJson = '';
     let isRestoring = false;
 
@@ -1417,56 +1570,56 @@
         careers: {
             "chasseur": {
                 label: "Chasseur de primes",
-                skills: ["athletisme", "coercition", "perception", "pilotage-planetaire", "survie", "distance-lourdes"],
+                skills: ["athletisme", "distance-lourdes", "perception", "pilotage-planetaire", "pilotage-espace", "pugilat", "systeme-d", "vigilance"],
                 specs: {
-                    "assassin": { label: "Assassin", skills: ["discretion", "corps-a-corps", "distance-legeres", "perception"] },
-                    "gadgeteur": { label: "Expert en gadgets", skills: ["pugilat", "coercition", "mecanique", "distance-legeres"] },
-                    "traqueur": { label: "Expert en survie", skills: ["xenologie", "perception", "resistance", "survie"] }
+                    "assassin": { label: "Assassin", skills: ["corps-a-corps", "discretion", "distance-lourdes", "magouilles"] },
+                    "gadgets": { label: "Expert en gadgets", skills: ["pugilat", "coercition", "mecanique", "distance-legeres"] },
+                    "survie": { label: "Expert en survie", skills: ["xenologie", "perception", "resistance", "survie"] }
                 }
             },
             "colon": {
                 label: "Colon",
-                skills: ["calme", "charme", "tromperie", "education", "commandement", "negociation"],
+                skills: ["charme", "commandement", "mondes-du-noyau", "education", "culture", "negociation", "systeme-d", "tromperie"],
                 specs: {
-                    "toubib": { label: "Toubib", skills: ["medecine", "resistance", "xenologie", "calme"] },
-                    "politicien": { label: "Politicien", skills: ["charme", "coercition", "commandement", "tromperie"] },
-                    "erudit": { label: "Érudit", skills: ["education", "mondes-du-noyau", "bordure-exterieure", "xenologie"] }
+                    "medecin": { label: "Médecin", skills: ["calme", "education", "medecine", "resistance"] },
+                    "diplomate": { label: "Diplomate", skills: ["charme", "coercition", "mondes-du-noyau", "tromperie"] },
+                    "erudit": { label: "Érudit", skills: ["bordure-exterieure", "pegres", "xenologie", "perception"] }
                 }
             },
             "explorateur": {
                 label: "Explorateur",
-                skills: ["astrogation", "athletisme", "pilotage-espace", "survie", "xenologie", "bordure-exterieure"],
+                skills: ["astrogation", "calme", "bordure-exterieure", "culture", "xenologie", "perception", "pilotage-espace", "survie"],
                 specs: {
-                    "arpenteur": { label: "Arpenteur", skills: ["survie", "athletisme", "perception", "resistance"] },
-                    "pilote-ligne": { label: "Pilote de ligne", skills: ["astrogation", "pilotage-espace", "pilotage-planetaire", "mecanique"] },
-                    "archeologue": { label: "Archéologue", skills: ["culture", "education", "perception", "athletisme"] }
+                    "eclaireur": { label: "Éclaireur", skills: ["athletisme", "medecine", "pilotage-planetaire", "survie"] },
+                    "bourlingueur": { label: "Bourlingueur", skills: ["astrogation", "coordination", "negociation", "systeme-d"] },
+                    "negociant": { label: "Négociant", skills: ["mondes-du-noyau", "pegres", "negociation", "tromperie"] }
                 }
             },
             "mercenaire": {
                 label: "Mercenaire",
-                skills: ["athletisme", "coercition", "resistance", "corps-a-corps", "distance-lourdes", "pugilat"],
+                skills: ["athletisme", "corps-a-corps", "distance-legeres", "pilotage-planetaire", "pugilat", "resistance", "sang-froid", "vigilance"],
                 specs: {
-                    "mercenaire-combattant": { label: "Mercenaire / Soldat", skills: ["commandement", "sang-froid", "distance-lourdes", "artillerie"] },
-                    "garde-du-corps": { label: "Garde du corps", skills: ["perception", "vigilance", "pugilat", "distance-legeres"] },
-                    "artilleur": { label: "Artilleur", skills: ["artillerie", "mecanique", "distance-lourdes", "sang-froid"] }
+                    "garde-du-corps": { label: "Garde du corps", skills: ["artillerie", "distance-lourdes", "perception", "pilotage-planetaire"] },
+                    "maraudeur": { label: "Maraudeur", skills: ["coercition", "corps-a-corps", "resistance", "survie"] },
+                    "soldat-a-louer": { label: "Soldat à louer", skills: ["artillerie", "commandement", "distance-lourdes", "sang-froid"] }
                 }
             },
             "contrebandier": {
                 label: "Contrebandier",
-                skills: ["tromperie", "coordination", "pilotage-espace", "magouilles", "systeme-d", "distance-legeres"],
+                skills: ["pegres", "coordination", "magouilles", "perception", "pilotage-espace", "systeme-d", "tromperie", "vigilance"],
                 specs: {
-                    "pilote": { label: "Pilote", skills: ["astrogation", "pilotage-espace", "pilotage-planetaire", "mecanique"] },
-                    "escroc": { label: "Escroc", skills: ["charme", "tromperie", "magouilles", "negociation"] },
-                    "voleur": { label: "Voleur", skills: ["discretion", "coordination", "perception", "magouilles"] }
+                    "pilote": { label: "Pilote", skills: ["astrogation", "artillerie", "pilotage-planetaire", "pilotage-espace"] },
+                    "vaurien": { label: "Vaurien", skills: ["calme", "charme", "distance-legeres", "tromperie"] },
+                    "voleur": { label: "Voleur", skills: ["discretion", "informatique", "magouilles", "vigilance"] }
                 }
             },
             "technicien": {
                 label: "Technicien",
-                skills: ["astrogation", "informatique", "mecanique", "coordination", "bordure-exterieure", "sang-froid"],
+                skills: ["astrogation", "bordure-exterieure", "coordination", "informatique", "mecanique", "perception", "pilotage-planetaire", "sang-froid"],
                 specs: {
-                    "mecano": { label: "Mécano", skills: ["mecanique", "pilotage-planetaire", "resistance", "informatique"] },
-                    "pirateur": { label: "Pirateur", skills: ["informatique", "tromperie", "magouilles", "education"] },
-                    "bricoleur": { label: "Bricoleur", skills: ["mecanique", "informatique", "systeme-d", "perception"] }
+                    "mecanicien": { label: "Mécanicien", skills: ["magouilles", "mecanique", "pilotage-espace", "pugilat"] },
+                    "tech-hors-la-loi": { label: "Tech hors-la-loi", skills: ["education", "pegres", "mecanique", "systeme-d"] },
+                    "slicer": { label: "Slicer", skills: ["education", "pegres", "discretion", "informatique"] }
                 }
             },
             "as": {
@@ -1510,7 +1663,7 @@
                 skills: ["informatique", "tromperie", "discretion", "perception", "vigilance", "magouilles", "distance-legeres", "systeme-d"],
                 specs: {
                     "agent-d-infiltration": { label: "Infiltrateur", skills: ["discretion", "coordination", "corps-a-corps", "magouilles"] },
-                    "eclaireur": { label: "Éclaireur", skills: ["athletisme", "perception", "survie", "vigilance"] },
+                    "eclaireur-espion": { label: "Éclaireur", skills: ["athletisme", "perception", "survie", "vigilance"] },
                     "interrogateur": { label: "Interrogateur", skills: ["coercition", "perception", "tromperie", "medecine"] }
                 }
             },
@@ -1525,9 +1678,9 @@
             },
             "consul": {
                 label: "Consul",
-                skills: ["calme", "charme", "education", "negociation", "lore"],
+                skills: ["calme", "charme", "education", "negociation", "culture"],
                 specs: {
-                    "erudit-force": { label: "Érudit", skills: ["education", "lore", "xenologie", "perception"] },
+                    "erudit-force": { label: "Érudit", skills: ["education", "culture", "xenologie", "perception"] },
                     "guerisseur": { label: "Guérisseur", skills: ["medecine", "calme", "xenologie"] },
                     "mediateur": { label: "Médiateur", skills: ["charme", "coercition", "negociation", "calme"] }
                 }
@@ -1543,11 +1696,11 @@
             },
             "mystique": {
                 label: "Mystique",
-                skills: ["coercition", "perception", "survie", "vigilance", "lore"],
+                skills: ["coercition", "perception", "survie", "vigilance", "culture"],
                 specs: {
                     "consulteur": { label: "Conseiller", skills: ["charme", "coercition", "perception"] },
                     "makashi": { label: "Maître du Makashi", skills: ["tromperie", "calme", "sabre-laser", "charme"] },
-                    "prophete": { label: "Prophète", skills: ["coercition", "vigilance", "lore"] }
+                    "prophete": { label: "Prophète", skills: ["coercition", "vigilance", "culture"] }
                 }
             },
             "emissaire": {
@@ -1598,16 +1751,20 @@
         let maxE = 0;
         const speciesSelect = document.getElementById('id-species');
         if (speciesSelect && speciesSelect.value !== '') {
-            maxE = (speciesSelect.value.toLowerCase() === 'humain') ? 2 : 1;
+            const sp = DATABASE.species[speciesSelect.value];
+            maxE = sp ? sp.freeRanks : 1;
         }
+        // Droïde : pas de rang d'espèce, mais 6 rangs de carrière et 3 de spécialisation (au lieu de 4 et 2)
+        const isDroid = !!speciesSelect && speciesSelect.value === 'droid';
+        const maxC = isDroid ? 6 : 4, maxS = isDroid ? 3 : 2;
 
         const elE = document.getElementById('count-e');
         const elC = document.getElementById('count-c');
         const elS = document.getElementById('count-s');
 
         if (elE) elE.textContent = `${countE} / ${maxE}`;
-        if (elC) elC.textContent = `${countC} / 4`;
-        if (elS) elS.textContent = `${countS} / 2`;
+        if (elC) elC.textContent = `${countC} / ${maxC}`;
+        if (elS) elS.textContent = `${countS} / ${maxS}`;
     }
 
     function calculateXP() {
@@ -1677,25 +1834,8 @@
         if (detailEl) {
             detailEl.textContent = `Carac: ${xpCarac} | Spé: ${xpSpecs} | Comp: ${xpSkills} | Talents: ${xpTalents} | Arbres: ${xpTrees}`;
         }
+        refreshDerived();
         if (typeof renderTrees === 'function') renderTrees();
-    }
-
-    function updateDerivedStats() {
-        const speciesKey = document.getElementById('id-species').value;
-        const speciesData = DATABASE.species[speciesKey];
-
-        const vig = parseInt(document.getElementById('c-vig').value) || 0;
-        const vol = parseInt(document.getElementById('c-vol').value) || 0;
-
-        document.getElementById('st-soak').value = vig;
-
-        if (speciesData) {
-            document.getElementById('st-w-thresh').value = speciesData.wThresh + vig;
-            document.getElementById('st-s-thresh').value = speciesData.sThresh + vol;
-        } else {
-            document.getElementById('st-w-thresh').value = vig;
-            document.getElementById('st-s-thresh').value = vol;
-        }
     }
 
     function setMode(mode) {
@@ -1763,8 +1903,7 @@
     function updateRowDice(row) {
         if (!row) return;
         const caracType = row.getAttribute('data-carac');
-        const caracInput = document.getElementById('c-' + caracType);
-        const caracValue = caracInput ? (parseInt(caracInput.value) || 0) : 0;
+        const caracValue = caracEff(caracType);
         
         const ranksContainer = row.querySelector('.skill-ranks');
         const skillValue = parseInt(ranksContainer.getAttribute('data-score')) || 0;
@@ -1933,7 +2072,9 @@
             textareas: {}, 
             skills: {}, 
             selectedSpecs: selectedSpecs,
-            talentTrees: talentTrees
+            talentTrees: talentTrees,
+            talentChoices: talentChoices,
+            gear: gear
         };
         
         document.querySelectorAll('input[id], select[id]').forEach(i => {
@@ -1992,7 +2133,10 @@
         if (data.mode) setMode(data.mode);
         if (data.filter) setSkillFilter(data.filter);
         if (data.selectedSpecs) selectedSpecs = data.selectedSpecs;
-        if (data.talentTrees && typeof data.talentTrees === "object") talentTrees = data.talentTrees;
+        talentTrees = (data.talentTrees && typeof data.talentTrees === "object") ? data.talentTrees : {};
+        talentChoices = (data.talentChoices && typeof data.talentChoices === "object") ? data.talentChoices : {};
+        if (Array.isArray(data.gear)) gear = data.gear.map(sanitizeGear).filter(Boolean);
+        else { gear = []; migrateOldWeapons(data.inputs || {}); }
 
         if (data.inputs) {
             Object.keys(data.inputs).forEach(id => {
@@ -2013,6 +2157,12 @@
             });
         }
 
+        // « Lore / Savoirs » était un doublon de « Culture » : on reprend les anciens rangs dans Culture
+        if (data.skills && data.skills.lore) {
+            const c = data.skills.culture;
+            if (!c || !(c.states || []).some(x => x && x !== 'none')) data.skills.culture = data.skills.lore;
+            delete data.skills.lore;
+        }
         if (data.skills) {
             Object.keys(data.skills).forEach(id => {
                 const row = document.querySelector(`.skill-row[data-id="${id}"]`);
@@ -2038,10 +2188,43 @@
             });
         }
 
+        if (migrateSpecKeys(document.getElementById('id-career').value)) {
+            renderSpecTags();
+            recalculateCareerSkills();
+        }
         updateAllDice();
         updateDerivedStats();
         calculateXP();
         updateLegendCounts();
+    }
+
+    // Anciennes clés de spécialisation (avant l'alignement sur le livre) -> nouvelles ; null = supprimée
+    const OLD_SPEC_KEYS = {
+        "gadgeteur": "gadgets", "traqueur": "survie", "toubib": "medecin", "politicien": "diplomate",
+        "arpenteur": "eclaireur", "pilote-ligne": "bourlingueur", "archeologue": null,
+        "mercenaire-combattant": "soldat-a-louer", "artilleur": null, "escroc": "vaurien",
+        "mecano": "mecanicien", "pirateur": "slicer", "bricoleur": "tech-hors-la-loi"
+    };
+    function migrateSpecKeys(careerKey) {
+        let changed = false;
+        const ren = k => (k in OLD_SPEC_KEYS) && !(careerKey === 'espion' && k === 'eclaireur') ? OLD_SPEC_KEYS[k] : k;
+        const out = [];
+        selectedSpecs.forEach(k => {
+            const nk = ren(k);
+            if (nk !== k) changed = true;
+            if (nk && !out.includes(nk)) out.push(nk);
+        });
+        selectedSpecs = out;
+        [talentTrees, talentChoices].forEach(obj => {
+            Object.keys(obj).forEach(k => {
+                if (!(k in OLD_SPEC_KEYS)) return;
+                const nk = OLD_SPEC_KEYS[k];
+                if (nk && !(nk in obj)) obj[nk] = obj[k];
+                delete obj[k];
+                changed = true;
+            });
+        });
+        return changed;
     }
 
     function clearSheet() {
@@ -2123,7 +2306,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadAll();
         
-        document.querySelectorAll('input, select, textarea').forEach(el => {
+        document.querySelectorAll('input[id], select[id], textarea[id]').forEach(el => {
             el.addEventListener('input', () => {
                 if (el.id.startsWith('c-')) {
                     updateDerivedStats();
@@ -2202,12 +2385,644 @@
             el.addEventListener('focus', () => setTimeout(() => { try { el.select(); } catch (err) {} }, 0));
         });
     });
+
+    /* ===================================================================
+       SOURCES DES VALEURS : encaissement, seuils, défenses
+       Chaque total = somme de sources (espèce, caractéristique, armure portée,
+       talents de l'arbre, bonus manuel). Le détail s'ouvre en touchant la valeur.
+       =================================================================== */
+    const CARAC_DEFS = [
+        { k: 'vig', label: 'Vigueur' }, { k: 'ag', label: 'Agilité' }, { k: 'int', label: 'Intelligence' },
+        { k: 'ru', label: 'Ruse' }, { k: 'vol', label: 'Volonté' }, { k: 'pre', label: 'Présence' }
+    ];
+    const STAT_TITLES = {
+        soak: 'Encaissement', wound: 'Seuil de blessures', stress: 'Seuil de stress',
+        defR: 'Défense à distance', defM: 'Défense au corps à corps'
+    };
+    // Règle d'encombrement d'une armure PORTÉE : à vérifier dans le livre (valeur 0 = désactivé)
+    const GEAR_CFG = { encArmurePortee: 3 };
+    let openStat = null;
+
+    function h(tag, cls, text) {
+        const e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text !== undefined && text !== null) e.textContent = text;
+        return e;
+    }
+    const fmtSigned = v => (v < 0 ? '−' : '+') + Math.abs(v);
+
+    function caracBought(k) {
+        const el = document.getElementById('c-' + k);
+        return el ? (parseInt(el.value) || 0) : 0;
+    }
+    function caracTalentBonus(c) {
+        let b = 0;
+        if (typeof TALENT_TREES === 'undefined') return 0;
+        Object.keys(talentTrees).forEach(k => {
+            const tr = TALENT_TREES[k], got = talentTrees[k];
+            if (!tr || !Array.isArray(got)) return;
+            tr.talents.forEach(n => {
+                if (!got.includes(n.id) || !n.effets) return;
+                n.effets.forEach(e => {
+                    if (e.carac === 'choix' && talentChoices[k] && talentChoices[k][n.id] === c) b += e.val;
+                });
+            });
+        });
+        return b;
+    }
+    const caracEff = k => Math.min(6, caracBought(k) + caracTalentBonus(k));
+
+    // Conditions d'effet : 'armure' = une armure (hors bouclier) portée ; 'armure2' = idem avec encaissement 2 ou plus
+    function effetCondOk(cond) {
+        if (!cond) return true;
+        const worn = gear.filter(g => g.kind === 'armure' && g.worn && !g.shield);
+        if (cond === 'armure') return worn.length > 0;
+        if (cond === 'armure2') return worn.some(g => (g.soak || 0) >= 2);
+        return true;
+    }
+    function talentStatParts(stat) {
+        const parts = [];
+        if (typeof TALENT_TREES === 'undefined') return parts;
+        Object.keys(talentTrees).forEach(k => {
+            const tr = TALENT_TREES[k], got = talentTrees[k];
+            if (!tr || !Array.isArray(got)) return;
+            const agg = {}, order = [];
+            tr.talents.forEach(n => {
+                if (!got.includes(n.id) || !n.effets) return;
+                n.effets.forEach(e => {
+                    if (e.stat !== stat || !effetCondOk(e.cond)) return;
+                    if (!(n.nom in agg)) { agg[n.nom] = 0; order.push(n.nom); }
+                    agg[n.nom] += e.val;
+                });
+            });
+            order.forEach(nom => parts.push({ label: nom, val: agg[nom] }));
+        });
+        return parts;
+    }
+
+    function computeStat(stat) {
+        const parts = [];
+        const species = DATABASE.species[document.getElementById('id-species').value];
+        if (stat === 'soak') {
+            parts.push({ src: 'Caractéristique', label: 'Vigueur', val: caracEff('vig') });
+            // Le droïde commence le jeu avec le talent Endurance (châssis métallique) : +1 d'encaissement
+            if (document.getElementById('id-species').value === 'droid') parts.push({ src: 'Base', label: 'Droïde : Endurance', val: 1 });
+        }
+        if (stat === 'wound') {
+            if (species) parts.push({ src: 'Base', label: 'Espèce', val: species.wThresh });
+            parts.push({ src: 'Caractéristique', label: 'Vigueur', val: caracEff('vig') });
+        }
+        if (stat === 'stress') {
+            if (species) parts.push({ src: 'Base', label: 'Espèce', val: species.sThresh });
+            parts.push({ src: 'Caractéristique', label: 'Volonté', val: caracEff('vol') });
+        }
+        if (stat === 'soak' || stat === 'defR' || stat === 'defM') {
+            const f = (stat === 'soak') ? 'soak' : 'def';
+            gear.forEach(g => {
+                if (g.kind === 'armure' && g.worn && (g[f] || 0) !== 0) parts.push({ src: 'Armure', label: g.nom, val: g[f] });
+            });
+        }
+        talentStatParts(stat).forEach(p => parts.push({ src: 'Talent', label: p.label, val: p.val }));
+        const m = parseInt(document.getElementById('bonus-' + stat).value) || 0;
+        if (m) parts.push({ src: 'Bonus', label: 'Bonus manuel', val: m });
+        return { parts: parts, total: parts.reduce((a, p) => a + p.val, 0) };
+    }
+
+    function updateDerivedStats() {
+        const map = { soak: 'st-soak', wound: 'st-w-thresh', stress: 'st-s-thresh', defR: 'st-def-range', defM: 'st-def-melee' };
+        Object.keys(map).forEach(k => {
+            const t = computeStat(k).total;
+            const el = document.getElementById(map[k]); if (el) el.value = t;
+            const tx = document.getElementById(map[k] + '-txt'); if (tx) tx.textContent = String(t);
+        });
+        updateCurrentColors();
+    }
+
+    function updateCurrentColors() {
+        [['box-wound', 'st-w-curr', 'st-w-thresh'], ['box-stress', 'st-s-curr', 'st-s-thresh']].forEach(a => {
+            const box = document.getElementById(a[0]); if (!box) return;
+            const cur = parseInt(document.getElementById(a[1]).value) || 0;
+            const th = parseInt(document.getElementById(a[2]).value) || 0;
+            box.classList.toggle('over', th > 0 && cur > th);
+            box.classList.toggle('warn', th > 0 && cur <= th && cur >= th * 0.75);
+        });
+    }
+
+    function renderCaracBadges() {
+        CARAC_DEFS.forEach(c => {
+            const el = document.getElementById('ce-' + c.k); if (!el) return;
+            const b = caracTalentBonus(c.k);
+            el.textContent = b ? ('+' + b + ' → ' + caracEff(c.k)) : '';
+            el.classList.toggle('on', !!b);
+        });
+    }
+
+    // Tout ce qui dépend des caractéristiques, de l'équipement et des talents
+    function refreshDerived() {
+        updateDerivedStats();
+        updateAllDice();
+        renderCaracBadges();
+        renderGear();
+        if (openStat) renderStatDetail();
+    }
+
+    function stepValue(id, d) {
+        const el = document.getElementById(id); if (!el) return;
+        const isBonus = id.indexOf('bonus-') === 0;
+        let v = (parseInt(el.value) || 0) + d;
+        if (!isBonus) v = Math.max(0, v);
+        el.value = v;
+        if (isBonus) refreshDerived(); else updateCurrentColors();
+        saveAll();
+    }
+
+    // Appui court = 1 pas ; appui long = répétition. Un défilement annule le geste.
+    function bindRepeat(btn, getTarget) {
+        if (!btn) return;
+        let t = null, iv = null, rep = false;
+        const d = parseInt(btn.dataset.d, 10);
+        const act = () => { const id = getTarget(); if (id) stepValue(id, d); };
+        const stop = () => { clearTimeout(t); clearInterval(iv); t = null; iv = null; };
+        btn.addEventListener('pointerdown', () => {
+            rep = false; stop();
+            t = setTimeout(() => { rep = true; act(); iv = setInterval(act, 120); }, 450);
+        });
+        btn.addEventListener('pointerup', () => {
+            const was = (t !== null || iv !== null), r = rep;
+            stop(); rep = false;
+            if (was && !r) act();
+        });
+        ['pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, () => { stop(); rep = false; }));
+        btn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
+        btn.addEventListener('contextmenu', e => e.preventDefault());
+    }
+
+    function openStatModal(stat) {
+        openStat = stat;
+        renderStatDetail();
+        document.getElementById('statModal').style.display = 'flex';
+    }
+    function closeStatModal() {
+        openStat = null;
+        document.getElementById('statModal').style.display = 'none';
+    }
+    function renderStatDetail() {
+        if (!openStat) return;
+        const r = computeStat(openStat);
+        document.getElementById('sm-title').textContent = STAT_TITLES[openStat];
+        const box = document.getElementById('sm-lines');
+        box.replaceChildren();
+        const lines = r.parts.filter(p => p.src !== 'Bonus');
+        if (!lines.length) box.appendChild(h('div', 'sm-none', 'Aucune source pour le moment.'));
+        lines.forEach(p => {
+            const row = h('div', 'sm-line');
+            const left = h('span', '');
+            left.appendChild(h('small', '', p.src));
+            left.appendChild(document.createTextNode(p.label));
+            row.appendChild(left);
+            row.appendChild(h('b', '', fmtSigned(p.val)));
+            box.appendChild(row);
+        });
+        document.getElementById('sm-total').textContent = String(r.total);
+        document.getElementById('sm-manual-val').textContent = fmtSigned(parseInt(document.getElementById('bonus-' + openStat).value) || 0);
+    }
+
+    /* ===================== FENÊTRE DE CHOIX ===================== */
+    function openChoice(title, options, cb) {
+        document.getElementById('choice-title').textContent = title;
+        const box = document.getElementById('choice-list');
+        box.replaceChildren();
+        options.forEach(o => {
+            const b = h('button', 'choice-btn', o.label);
+            b.type = 'button';
+            b.addEventListener('click', () => { closeChoice(); cb(o.value); });
+            box.appendChild(b);
+        });
+        document.getElementById('choiceModal').style.display = 'flex';
+    }
+    function closeChoice() { document.getElementById('choiceModal').style.display = 'none'; }
+
+    /* ===================== ÉQUIPEMENT : ARMES ET ARMURES ===================== */
+    function newUid() { return 'g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+    function sanitizeGear(g) {
+        if (!g || typeof g !== 'object' || typeof g.nom !== 'string' || !g.nom.trim()) return null;
+        const kind = g.kind === 'armure' ? 'armure' : 'arme';
+        const num = (v, d) => { const n = parseInt(v, 10); return isNaN(n) ? d : n; };
+        const nul = v => (v === null || v === undefined || v === '') ? null : num(v, null);
+        const out = {
+            uid: (typeof g.uid === 'string' && g.uid) ? g.uid.slice(0, 40) : newUid(),
+            kind: kind, nom: g.nom.trim().slice(0, 80), cat: typeof g.cat === 'string' ? g.cat.slice(0, 20) : '',
+            enc: num(g.enc, 0), emp: num(g.emp, 0), prix: typeof g.prix === 'string' ? g.prix.slice(0, 20) : '',
+            rar: num(g.rar, 0), note: typeof g.note === 'string' ? g.note.slice(0, 120) : '', worn: !!g.worn
+        };
+        if (kind === 'arme') {
+            out.worn = false;
+            out.comp = typeof g.comp === 'string' ? g.comp.slice(0, 40) : '';
+            out.deg = nul(g.deg); out.add = !!g.add; out.crit = nul(g.crit);
+            out.portee = typeof g.portee === 'string' ? g.portee.slice(0, 30) : '';
+            out.spe = Array.isArray(g.spe) ? g.spe.filter(s => typeof s === 'string' && s.trim()).map(s => s.trim().slice(0, 90)) : [];
+        } else {
+            out.def = num(g.def, 0); out.soak = num(g.soak, 0); out.shield = !!g.shield;
+        }
+        return out;
+    }
+
+    // Anciennes sauvegardes : les 2 lignes du tableau d'armes deviennent des armes personnalisées
+    function migrateOldWeapons(inp) {
+        [1, 2].forEach(i => {
+            const n = String(inp['w' + i + '-n'] || '').trim();
+            if (!n) return;
+            const d = String(inp['w' + i + '-d'] || '').trim();
+            const p = String(inp['w' + i + '-p'] || '').trim();
+            const sp = String(inp['w' + i + '-sp'] || '').trim();
+            const dn = parseInt(d, 10);
+            const numeric = !isNaN(dn) && String(dn) === d;
+            const g = sanitizeGear({
+                kind: 'arme', nom: n, comp: '', deg: numeric ? dn : null, add: false, crit: null,
+                portee: p, enc: 0, spe: sp ? sp.split(',') : [], note: (!numeric && d) ? ('Dégâts : ' + d) : ''
+            });
+            if (g) gear.push(g);
+        });
+    }
+
+    function gearEncumbrance() {
+        let t = 0;
+        gear.forEach(g => {
+            let e = parseInt(g.enc) || 0;
+            if (g.kind === 'armure' && g.worn) e = Math.max(0, e - GEAR_CFG.encArmurePortee);
+            t += e;
+        });
+        return t;
+    }
+
+    // Une armure ajoutée est portée d'office si aucune armure du même type (armure / bouclier) ne l'est déjà
+    function autoWear(g) {
+        if (!g || g.kind !== 'armure') return;
+        if (!gear.some(o => o.kind === 'armure' && o.worn && !!o.shield === !!g.shield)) g.worn = true;
+    }
+
+    function afterGearChange() { refreshDerived(); saveAll(); }
+
+    function addCatalogItem(kind, id) {
+        const list = (kind === 'arme') ? CATALOGUE.armes : CATALOGUE.armures;
+        const src = list.find(x => x.id === id);
+        if (!src) return;
+        const g = sanitizeGear(Object.assign({}, JSON.parse(JSON.stringify(src)), { uid: newUid(), kind: kind }));
+        if (g) { autoWear(g); gear.push(g); afterGearChange(); }
+    }
+
+    function removeGear(uid) {
+        const g = gear.find(x => x.uid === uid); if (!g) return;
+        askConfirm('Retirer « ' + g.nom + ' » ?', () => { gear = gear.filter(x => x.uid !== uid); afterGearChange(); });
+    }
+
+    function toggleWorn(uid) {
+        const g = gear.find(x => x.uid === uid);
+        if (!g || g.kind !== 'armure') return;
+        g.worn = !g.worn;
+        if (g.worn && !g.shield) gear.forEach(o => { if (o !== g && o.kind === 'armure' && !o.shield) o.worn = false; });
+        afterGearChange();
+    }
+
+    function compLabel(id) {
+        if (!id) return 'Sans compétence';
+        const row = document.querySelector('.skill-row[data-id="' + id + '"]');
+        if (!row) return id;
+        return row.querySelector('.skill-name').firstChild.textContent.trim();
+    }
+
+    function skillPool(id) {
+        const row = id ? document.querySelector('.skill-row[data-id="' + id + '"]') : null;
+        if (!row) return null;
+        const c = caracEff(row.getAttribute('data-carac'));
+        const s = parseInt(row.querySelector('.skill-ranks').getAttribute('data-score')) || 0;
+        const total = Math.max(c, s), y = Math.min(c, s);
+        return { g: total - y, y: y };
+    }
+
+    function fillPool(el, g, y) {
+        el.replaceChildren();
+        for (let i = 0; i < g; i++) el.appendChild(h('span', 'die-g', '◊'));
+        for (let i = 0; i < y; i++) el.appendChild(h('span', 'die-y', '⬢'));
+    }
+
+    function pill(label, val, sub, txt) {
+        const p = h('div', 'pill' + (txt ? ' txt' : ''));
+        p.appendChild(h('i', '', label));
+        p.appendChild(h('b', '', String(val)));
+        if (sub) p.appendChild(h('small', '', sub));
+        return p;
+    }
+
+    function weaponDamage(g) {
+        if (g.deg === null || g.deg === undefined) return { txt: '—', sub: '' };
+        if (g.add) return { txt: String(caracEff('vig') + g.deg), sub: 'Vig +' + g.deg };
+        return { txt: String(g.deg), sub: '' };
+    }
+
+    function buildDelButton(g) {
+        const del = h('button', 'gc-del', '×');
+        del.type = 'button';
+        del.setAttribute('aria-label', 'Retirer ' + g.nom);
+        del.addEventListener('click', () => removeGear(g.uid));
+        return del;
+    }
+
+    function buildWeaponCard(g) {
+        const card = h('div', 'gear-card weapon');
+        const head = h('div', 'gc-head');
+        const title = h('div', 'gc-title');
+        title.appendChild(h('b', 'gc-name', g.nom));
+        title.appendChild(h('span', 'gc-comp', compLabel(g.comp)));
+        head.appendChild(title);
+        const poolEl = h('div', 'gc-pool');
+        const p = skillPool(g.comp);
+        if (p) fillPool(poolEl, p.g, p.y);
+        head.appendChild(poolEl);
+        head.appendChild(buildDelButton(g));
+        card.appendChild(head);
+        const stats = h('div', 'gc-stats');
+        const dmg = weaponDamage(g);
+        stats.appendChild(pill('Dégâts', dmg.txt, dmg.sub));
+        stats.appendChild(pill('Critique', (g.crit === null || g.crit === undefined) ? '—' : g.crit));
+        stats.appendChild(pill('Portée', g.portee || '—', '', true));
+        stats.appendChild(pill('Encombr.', g.enc));
+        card.appendChild(stats);
+        const tags = (g.spe || []).slice();
+        if (g.note) tags.push(g.note);
+        if (tags.length) {
+            const box = h('div', 'gc-tags');
+            tags.forEach(t => box.appendChild(h('span', 'gc-tag', t)));
+            card.appendChild(box);
+        }
+        return card;
+    }
+
+    function buildArmorCard(g) {
+        const card = h('div', 'gear-card armor' + (g.worn ? ' worn' : ''));
+        const head = h('div', 'gc-head');
+        const title = h('div', 'gc-title');
+        title.appendChild(h('b', 'gc-name', g.nom));
+        title.appendChild(h('span', 'gc-comp', g.shield ? 'Bouclier · se cumule avec une armure' : 'Armure'));
+        head.appendChild(title);
+        const wear = h('button', 'gc-wear', g.worn ? '✓ Portée' : 'Rangée');
+        wear.type = 'button';
+        wear.setAttribute('aria-pressed', g.worn ? 'true' : 'false');
+        wear.addEventListener('click', () => toggleWorn(g.uid));
+        head.appendChild(wear);
+        head.appendChild(buildDelButton(g));
+        card.appendChild(head);
+        const stats = h('div', 'gc-stats three');
+        stats.appendChild(pill('Défense', g.def));
+        stats.appendChild(pill('Encaissement', g.soak, '', true));
+        const eff = Math.max(0, g.enc - GEAR_CFG.encArmurePortee);
+        if (g.worn && GEAR_CFG.encArmurePortee > 0 && eff !== g.enc) stats.appendChild(pill('Encombr.', eff, 'portée (base ' + g.enc + ')'));
+        else stats.appendChild(pill('Encombr.', g.enc));
+        card.appendChild(stats);
+        if (g.note) {
+            const box = h('div', 'gc-tags');
+            box.appendChild(h('span', 'gc-tag', g.note));
+            card.appendChild(box);
+        }
+        return card;
+    }
+
+    function renderGear() {
+        const wl = document.getElementById('gear-weapons-list'), al = document.getElementById('gear-armors-list');
+        if (!wl || !al) return;
+        wl.replaceChildren(); al.replaceChildren();
+        let nw = 0, na = 0;
+        gear.forEach(g => {
+            if (g.kind === 'armure') { al.appendChild(buildArmorCard(g)); na++; }
+            else { wl.appendChild(buildWeaponCard(g)); nw++; }
+        });
+        if (!nw) wl.appendChild(h('div', 'gear-empty', 'Aucune arme. Touchez « + Ajouter ».'));
+        if (!na) al.appendChild(h('div', 'gear-empty', 'Aucune armure. Touchez « + Ajouter ».'));
+        const enc = document.getElementById('gear-enc');
+        if (enc) enc.textContent = 'Armes et armures : ' + gearEncumbrance();
+    }
+
+    /* ----- fenêtre catalogue ----- */
+    let gmKind = 'arme', gmChip = 'tous', gmCustom = false, gmFields = null;
+    const WEAPON_CHIPS = [['tous', 'Toutes'], ['energie', 'Énergie'], ['percussion', 'Percussion'], ['jet', 'Jet'], ['explosif', 'Explosifs'], ['pugilat', 'Pugilat'], ['cac', 'Corps à corps']];
+    const PORTEES = ['Au contact', 'Courte', 'Moyenne', 'Longue', 'Extrême'];
+    const COMBAT_COMPS = ['artillerie', 'corps-a-corps', 'distance-legeres', 'distance-lourdes', 'pugilat', 'sabre-laser'];
+    const normTxt = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+    function openGearModal(kind) {
+        gmKind = kind; gmChip = 'tous'; gmCustom = false;
+        document.querySelector('#gearModal .gm-search').value = '';
+        renderGearModal();
+        document.getElementById('gearModal').style.display = 'flex';
+    }
+    function closeGearModal() { document.getElementById('gearModal').style.display = 'none'; }
+
+    function renderGearModal() {
+        const isW = gmKind === 'arme';
+        document.getElementById('gm-title').textContent = gmCustom ? (isW ? 'Arme personnalisée' : 'Armure personnalisée') : (isW ? 'Ajouter une arme' : 'Ajouter une armure');
+        document.querySelectorAll('#gm-tabs button').forEach(b => b.classList.toggle('on', b.dataset.k === gmKind));
+        const search = document.querySelector('#gearModal .gm-search'), chips = document.getElementById('gm-chips');
+        search.style.display = gmCustom ? 'none' : '';
+        chips.style.display = (gmCustom || !isW) ? 'none' : '';
+        document.getElementById('gm-list').style.display = gmCustom ? 'none' : '';
+        document.getElementById('gm-custom').style.display = gmCustom ? '' : 'none';
+        document.getElementById('gm-custom-btn').textContent = gmCustom ? '← Catalogue' : '✎ Personnalisée';
+        document.getElementById('gm-custom-ok').style.display = gmCustom ? '' : 'none';
+        if (gmCustom) { buildCustomForm(); return; }
+        chips.replaceChildren();
+        if (isW) {
+            WEAPON_CHIPS.forEach(c => {
+                const b = h('button', gmChip === c[0] ? 'on' : '', c[1]);
+                b.type = 'button';
+                b.addEventListener('click', () => { gmChip = c[0]; renderGearModal(); });
+                chips.appendChild(b);
+            });
+        }
+        renderGearList();
+    }
+
+    function priceTxt(p) {
+        if (!p) return '';
+        return p.indexOf('(I)') === 0 ? (p.replace('(I)', '').trim() + ' cr (I)') : (p + ' cr');
+    }
+
+    function renderGearList() {
+        const box = document.getElementById('gm-list');
+        box.replaceChildren();
+        const q = normTxt(document.querySelector('#gearModal .gm-search').value.trim());
+        const isW = gmKind === 'arme';
+        const src = (isW ? CATALOGUE.armes : CATALOGUE.armures).filter(it =>
+            (!isW || gmChip === 'tous' || it.cat === gmChip) && (!q || normTxt(it.nom).indexOf(q) !== -1));
+        if (!src.length) { box.appendChild(h('div', 'gm-none', 'Aucun résultat. Essayez « ✎ Personnalisée ».')); return; }
+        src.forEach(it => {
+            const b = h('button', 'gm-item');
+            b.type = 'button';
+            b.appendChild(h('span', 'gm-n', it.nom));
+            b.appendChild(h('span', 'gm-p', priceTxt(it.prix)));
+            let s;
+            if (isW) {
+                const d = (it.deg === null) ? '—' : (it.add ? 'Vig+' + it.deg : String(it.deg));
+                s = 'Dég ' + d + ' · Crit ' + (it.crit === null ? '—' : it.crit) + ' · ' + it.portee;
+            } else {
+                s = 'Déf ' + it.def + ' · Encaiss. ' + it.soak + ' · Encombr. ' + it.enc;
+            }
+            b.appendChild(h('span', 'gm-s', s));
+            b.addEventListener('click', () => { addCatalogItem(gmKind, it.id); closeGearModal(); });
+            box.appendChild(b);
+        });
+    }
+
+    function buildCustomForm() {
+        const box = document.getElementById('gm-custom');
+        box.replaceChildren();
+        const f = {};
+        const add = (label, el) => { box.appendChild(h('label', '', label)); box.appendChild(el); };
+        const input = (type, ph) => { const e = document.createElement('input'); e.type = type; if (ph) e.placeholder = ph; if (type === 'number') e.setAttribute('inputmode', 'numeric'); return e; };
+        const check = (label) => { const l = h('label', 'chk'); const c = document.createElement('input'); c.type = 'checkbox'; l.appendChild(c); l.appendChild(document.createTextNode(label)); return { l: l, c: c }; };
+        f.nom = input('text', 'Nom'); add('Nom', f.nom);
+        if (gmKind === 'arme') {
+            f.comp = document.createElement('select');
+            const o0 = h('option', '', '(aucune)'); o0.value = ''; f.comp.appendChild(o0);
+            COMBAT_COMPS.forEach(id => { const o = h('option', '', compLabel(id)); o.value = id; f.comp.appendChild(o); });
+            add('Compétence', f.comp);
+            const r = h('div', 'row2');
+            const a = h('div', ''); a.appendChild(h('label', '', 'Dégâts')); f.deg = input('number', '0'); a.appendChild(f.deg);
+            const b = h('div', ''); b.appendChild(h('label', '', 'Critique')); f.crit = input('number', 'aucun'); b.appendChild(f.crit);
+            r.appendChild(a); r.appendChild(b); box.appendChild(r);
+            const ck = check('Ajouter la Vigueur aux dégâts (corps à corps)'); f.add = ck.c; box.appendChild(ck.l);
+            f.portee = document.createElement('select');
+            PORTEES.forEach(p => { const o = h('option', '', p); o.value = p; f.portee.appendChild(o); });
+            add('Portée', f.portee);
+            f.enc = input('number', '0'); add('Encombrement', f.enc);
+            f.spe = input('text', 'Perforant 2, Sanguinaire 1…'); add('Qualités spéciales (séparées par des virgules)', f.spe);
+        } else {
+            const r = h('div', 'row2');
+            const a = h('div', ''); a.appendChild(h('label', '', 'Défense')); f.def = input('number', '0'); a.appendChild(f.def);
+            const b = h('div', ''); b.appendChild(h('label', '', 'Encaissement')); f.soak = input('number', '0'); b.appendChild(f.soak);
+            r.appendChild(a); r.appendChild(b); box.appendChild(r);
+            f.enc = input('number', '0'); add('Encombrement', f.enc);
+            const ck = check('Bouclier (se cumule avec une armure)'); f.shield = ck.c; box.appendChild(ck.l);
+        }
+        gmFields = f;
+    }
+
+    function submitCustom() {
+        const f = gmFields; if (!f) return;
+        const nom = f.nom.value.trim();
+        if (!nom) { showMessage("Donnez un nom à l'objet."); return; }
+        const iv = el => (el.value === '' ? null : parseInt(el.value, 10));
+        let g;
+        if (gmKind === 'arme') {
+            g = sanitizeGear({
+                kind: 'arme', nom: nom, comp: f.comp.value, deg: iv(f.deg), add: f.add.checked, crit: iv(f.crit),
+                portee: f.portee.value, enc: iv(f.enc) || 0, spe: f.spe.value.split(',')
+            });
+        } else {
+            g = sanitizeGear({ kind: 'armure', nom: nom, def: iv(f.def) || 0, soak: iv(f.soak) || 0, enc: iv(f.enc) || 0, shield: f.shield.checked });
+        }
+        if (g) { autoWear(g); gear.push(g); closeGearModal(); afterGearChange(); }
+    }
+
+    /* ----- branchements de l'interface ajoutée ----- */
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.step-btn[data-target]').forEach(b => bindRepeat(b, () => b.dataset.target));
+        bindRepeat(document.getElementById('sm-minus'), () => openStat ? 'bonus-' + openStat : null);
+        bindRepeat(document.getElementById('sm-plus'), () => openStat ? 'bonus-' + openStat : null);
+        document.querySelectorAll('.reset-cur').forEach(b => b.addEventListener('click', () => {
+            const el = document.getElementById(b.dataset.target);
+            if (el) { el.value = 0; updateCurrentColors(); saveAll(); }
+        }));
+        ['st-w-curr', 'st-s-curr'].forEach(id => document.getElementById(id).addEventListener('input', updateCurrentColors));
+        document.querySelectorAll('[data-stat]').forEach(b => b.addEventListener('click', () => openStatModal(b.dataset.stat)));
+        document.getElementById('sm-close').addEventListener('click', closeStatModal);
+        document.getElementById('statModal').addEventListener('click', e => { if (e.target.id === 'statModal') closeStatModal(); });
+
+        document.querySelectorAll('.gear-add').forEach(b => b.addEventListener('click', () => openGearModal(b.dataset.kind)));
+        document.querySelectorAll('#gm-tabs button').forEach(b => b.addEventListener('click', () => { gmKind = b.dataset.k; gmChip = 'tous'; renderGearModal(); }));
+        document.querySelector('#gearModal .gm-search').addEventListener('input', () => { if (!gmCustom) renderGearList(); });
+        document.getElementById('gm-close').addEventListener('click', closeGearModal);
+        document.getElementById('gm-custom-btn').addEventListener('click', () => { gmCustom = !gmCustom; renderGearModal(); });
+        document.getElementById('gm-custom-ok').addEventListener('click', submitCustom);
+        document.getElementById('gearModal').addEventListener('click', e => { if (e.target.id === 'gearModal') closeGearModal(); });
+
+        document.getElementById('choice-cancel').addEventListener('click', closeChoice);
+        document.getElementById('choiceModal').addEventListener('click', e => { if (e.target.id === 'choiceModal') closeChoice(); });
+
+        refreshDerived();
+    });
+
 </script>
+
+<!-- ===== CATALOGUE D'ÉQUIPEMENT (tables 5-5, 5-6 et 5-7 ; à modifier pour ajouter/corriger un objet) =====
+     deg = dégâts de base ; add:true = on ajoute la Vigueur (armes de corps à corps « +N ») ; crit:null = aucun critique ;
+     prix : texte, « (I) » = illégal/restreint ; rar = rareté ; emp = emplacements. -->
+<script>
+const CATALOGUE = {
+  armes: [
+    // --- Armes énergétiques ---
+    {id:"blaster-poche", cat:"energie", nom:"Blaster de poche", comp:"distance-legeres", deg:5, add:false, crit:4, portee:"Courte", enc:1, emp:1, prix:"200", rar:4, spe:["Réglage étourdissant"]},
+    {id:"pistolet-blaster-leger", cat:"energie", nom:"Pistolet blaster léger", comp:"distance-legeres", deg:5, add:false, crit:4, portee:"Moyenne", enc:1, emp:2, prix:"300", rar:4, spe:["Réglage étourdissant"]},
+    {id:"pistolet-blaster", cat:"energie", nom:"Pistolet blaster", comp:"distance-legeres", deg:6, add:false, crit:3, portee:"Moyenne", enc:1, emp:3, prix:"400", rar:4, spe:["Réglage étourdissant"]},
+    {id:"pistolet-blaster-lourd", cat:"energie", nom:"Pistolet blaster lourd", comp:"distance-legeres", deg:7, add:false, crit:3, portee:"Moyenne", enc:2, emp:3, prix:"700", rar:6, spe:["Réglage étourdissant"]},
+    {id:"carabine-blaster", cat:"energie", nom:"Carabine blaster", comp:"distance-lourdes", deg:9, add:false, crit:3, portee:"Moyenne", enc:3, emp:4, prix:"850", rar:5, spe:["Réglage étourdissant"]},
+    {id:"fusil-blaster", cat:"energie", nom:"Fusil blaster", comp:"distance-lourdes", deg:9, add:false, crit:3, portee:"Longue", enc:4, emp:4, prix:"900", rar:5, spe:["Réglage étourdissant"]},
+    {id:"fusil-blaster-lourd", cat:"energie", nom:"Fusil blaster lourd", comp:"distance-lourdes", deg:10, add:false, crit:3, portee:"Longue", enc:6, emp:4, prix:"1500", rar:6, spe:["Automatique","Encombrant 3"]},
+    {id:"blaster-leger-repetition", cat:"energie", nom:"Blaster léger à répétition", comp:"distance-lourdes", deg:11, add:false, crit:3, portee:"Longue", enc:7, emp:4, prix:"(I) 2250", rar:7, spe:["Automatique","Encombrant 4","Perforant 1"]},
+    {id:"blaster-lourd-repetition", cat:"energie", nom:"Blaster lourd à répétition", comp:"artillerie", deg:15, add:false, crit:2, portee:"Longue", enc:9, emp:4, prix:"(I) 6000", rar:8, spe:["Automatique","Encombrant 5","Perforant 2","Sanguinaire 1"]},
+    {id:"arbalete", cat:"energie", nom:"Arbalète", comp:"distance-lourdes", deg:10, add:false, crit:3, portee:"Moyenne", enc:5, emp:2, prix:"1250", rar:7, spe:["Encombrant 3","Renversement"]},
+    {id:"blaster-ionisation", cat:"energie", nom:"Blaster à ionisation", comp:"distance-legeres", deg:10, add:false, crit:5, portee:"Courte", enc:3, emp:3, prix:"250", rar:3, spe:["Désorientation 5","Dégâts étourdissants (contre les droïdes uniquement)"]},
+    {id:"pistolet-disrupteur", cat:"energie", nom:"Pistolet disrupteur", comp:"distance-legeres", deg:10, add:false, crit:2, portee:"Courte", enc:2, emp:2, prix:"(I) 3000", rar:6, spe:["Sanguinaire 4"]},
+    {id:"fusil-disrupteur", cat:"energie", nom:"Fusil disrupteur", comp:"distance-lourdes", deg:10, add:false, crit:2, portee:"Longue", enc:5, emp:4, prix:"(I) 5000", rar:6, spe:["Encombrant 2","Sanguinaire 5"]},
+    // --- Armes à percussion ---
+    {id:"pistolet-percussion", cat:"percussion", nom:"Pistolet à percussion", comp:"distance-legeres", deg:4, add:false, crit:5, portee:"Courte", enc:1, emp:0, prix:"100", rar:3, spe:[]},
+    {id:"fusil-percussion", cat:"percussion", nom:"Fusil à percussion", comp:"distance-lourdes", deg:7, add:false, crit:5, portee:"Moyenne", enc:5, emp:1, prix:"250", rar:3, spe:["Encombrant 2"]},
+    // --- Armes de jet ---
+    {id:"bolas-filet", cat:"jet", nom:"Bolas / Filet", comp:"distance-legeres", deg:2, add:false, crit:null, portee:"Courte", enc:1, emp:2, prix:"20", rar:2, spe:["Enchevêtrement 3","Renversement","Munitions limitées 1"], note:"Encombrement : 1 (bolas) / 3 (filet)"},
+    // --- Explosifs et autres armes ---
+    {id:"detonateur-thermique", cat:"explosif", nom:"Détonateur thermique", comp:"distance-legeres", deg:20, add:false, crit:2, portee:"Courte", enc:1, emp:0, prix:"(I) 2000", rar:8, spe:["Brèche 1","Munitions limitées 1","Sanguinaire 4","Souffle 15"]},
+    {id:"grenade-fragmentation", cat:"explosif", nom:"Grenade à fragmentation", comp:"distance-legeres", deg:8, add:false, crit:4, portee:"Courte", enc:1, emp:0, prix:"50", rar:5, spe:["Munitions limitées 1","Souffle 6"]},
+    {id:"grenade-etourdissante", cat:"explosif", nom:"Grenade étourdissante", comp:"distance-legeres", deg:8, add:false, crit:null, portee:"Courte", enc:1, emp:0, prix:"75", rar:4, spe:["Désorientation 3","Dégâts étourdissants","Munitions limitées 1","Souffle 8"]},
+    {id:"lance-flammes", cat:"explosif", nom:"Lance-flammes", comp:"distance-lourdes", deg:8, add:false, crit:2, portee:"Courte", enc:6, emp:2, prix:"1000", rar:6, spe:["Incendiaire 3","Souffle 8"]},
+    {id:"lance-missiles", cat:"explosif", nom:"Lance-missiles", comp:"artillerie", deg:20, add:false, crit:2, portee:"Extrême", enc:7, emp:4, prix:"(I) 7500", rar:8, spe:["Brèche 1","Déploiement 1","Encombrant 3","Munitions limitées 6","Projectile guidé 3","Souffle 10"]},
+    // --- Armes de pugilat ---
+    {id:"coup-de-poing", cat:"pugilat", nom:"Coup-de-poing", comp:"pugilat", deg:1, add:true, crit:4, portee:"Au contact", enc:1, emp:0, prix:"25", rar:0, spe:["Désorientation 3"]},
+    {id:"gants-decharges", cat:"pugilat", nom:"Gants à décharges", comp:"pugilat", deg:0, add:true, crit:5, portee:"Au contact", enc:0, emp:1, prix:"300", rar:2, spe:["Étourdissement 3"]},
+    // --- Armes de corps à corps ---
+    {id:"baton-gaderffii", cat:"cac", nom:"Bâton Gaderffii", comp:"corps-a-corps", deg:2, add:true, crit:3, portee:"Au contact", enc:3, emp:0, prix:"100", rar:2, spe:["Désorientation 3","Parade 1"]},
+    {id:"couteau-combat", cat:"cac", nom:"Couteau de combat", comp:"corps-a-corps", deg:1, add:true, crit:3, portee:"Au contact", enc:1, emp:0, prix:"25", rar:1, spe:[]},
+    {id:"lance-force", cat:"cac", nom:"Lance de force", comp:"corps-a-corps", deg:3, add:true, crit:2, portee:"Au contact", enc:3, emp:3, prix:"500", rar:4, spe:["Perforant 2","Réglage étourdissant"]},
+    {id:"matraque", cat:"cac", nom:"Matraque", comp:"corps-a-corps", deg:2, add:true, crit:5, portee:"Au contact", enc:2, emp:0, prix:"15", rar:1, spe:["Désorientation 2"]},
+    {id:"sabre-laser", cat:"cac", nom:"Sabre laser", comp:"sabre-laser", deg:10, add:false, crit:1, portee:"Au contact", enc:1, emp:0, prix:"(I) 10000", rar:10, spe:["Brèche 1","Briseur","Sanguinaire 2"]},
+    {id:"vibroepee", cat:"cac", nom:"Vibroépée", comp:"corps-a-corps", deg:2, add:true, crit:2, portee:"Au contact", enc:3, emp:3, prix:"750", rar:5, spe:["Parade","Perforant 2","Sanguinaire 1"]},
+    {id:"vibrohache", cat:"cac", nom:"Vibrohache", comp:"corps-a-corps", deg:3, add:true, crit:2, portee:"Au contact", enc:4, emp:3, prix:"750", rar:5, spe:["Briseur","Perforant 2","Sanguinaire 3"]},
+    {id:"vibrolame", cat:"cac", nom:"Vibrolame", comp:"corps-a-corps", deg:1, add:true, crit:2, portee:"Au contact", enc:1, emp:2, prix:"250", rar:3, spe:["Perforant 2","Sanguinaire 1"]}
+  ],
+  // def = défense (à distance et au corps à corps) ; soak = encaissement ; enc = encombrement ; shield:true = se cumule avec une armure
+  armures: [
+    {id:"armure-combat-lourde", nom:"Armure de combat lourde", def:1, soak:2, enc:6, emp:4, prix:"(I) 5000", rar:7},
+    {id:"armure-laminee", nom:"Armure laminée", def:0, soak:2, enc:4, emp:3, prix:"2500", rar:5},
+    {id:"armure-matelassee", nom:"Armure matelassée", def:0, soak:2, enc:2, emp:1, prix:"500", rar:1},
+    {id:"bouclier-deflecteur", nom:"Bouclier déflecteur individuel", def:2, soak:0, enc:3, emp:0, prix:"10000", rar:8, shield:true},
+    {id:"tenue-exploration", nom:"Tenue d'exploration", def:0, soak:1, enc:2, emp:1, prix:"500", rar:1},
+    {id:"vetements-renforces", nom:"Vêtements renforcés", def:1, soak:1, enc:3, emp:1, prix:"1000", rar:6},
+    {id:"vetements-epais", nom:"Vêtements épais", def:0, soak:1, enc:1, emp:0, prix:"50", rar:0}
+  ]
+};
+/* Cellules illisibles ou incertaines sur les photos (à vérifier dans le livre) :
+   - Armure de combat lourde : emplacements (3) et rareté (7) ; prix « (I) 5000 » partiellement délavé
+   - Armure matelassée : prix (500 retenu, 600 possible), emplacements (1), rareté (1)
+   - Détonateur thermique : prix (I) 2000 coupé par l'ombre
+   - Arbalète : nom tel qu'imprimé dans le livre */
+</script>
+
 
 <!-- ===== DONNÉES DES ARBRES DE TALENTS (à modifier pour ajouter/corriger un arbre) =====
      pos = [ligne, colonne] ; liens = cases reliées par un trait (une seule direction suffit) ;
      talent = identifiant du talent (les cases de même talent cumulent leurs rangs) ; classe = talent à rangs.
-     La clé de chaque arbre doit être la clé de la spécialisation dans DATABASE.careers[...].specs. -->
+     La clé de chaque arbre doit être la clé de la spécialisation dans DATABASE.careers[...].specs. 
+     effets = (optionnel) effets chiffrés appliqués à la fiche : {stat:"soak"|"wound"|"stress"|"defR"|"defM", val:N}
+     ou {carac:"choix", val:N} (+N à une caractéristique choisie à l'achat). -->
 <script>
 const TALENT_TREES = {
   assassin: {
@@ -2216,7 +3031,7 @@ const TALENT_TREES = {
     edition: "Aux Confins de l'Empire",
     competencesBonus: ["Corps à corps", "Discrétion", "Distance (Armes lourdes)", "Magouilles"],
     talents: [
-      {id:"a11", talent:"robustesse", nom:"Robustesse", cout:5, type:"passif", classe:false, pos:[1,1], liens:["a21"],
+      {id:"a11", talent:"robustesse", nom:"Robustesse", cout:5, type:"passif", classe:false, pos:[1,1], liens:["a21"], effets:[{stat:"stress", val:1}],
        description:"Augmentez votre seuil de stress de +1."},
       {id:"a12", talent:"coup-mortel", nom:"Coup mortel", cout:5, type:"passif", classe:true, pos:[1,2], liens:["a22"],
        description:"Ajoutez +10 par rang de Coup mortel aux résultats des blessures critiques infligées à vos adversaires."},
@@ -2256,13 +3071,238 @@ const TALENT_TREES = {
        description:"Une fois par round, vous pouvez exécuter une manœuvre, mais subissez du stress qui ne peut dépasser votre rang de Coup précis. Ensuite, réduisez d'autant la défense au corps à corps et à distance de la cible."},
       {id:"a52", talent:"precision-mortelle", nom:"Précision mortelle", cout:25, type:"passif", classe:true, pos:[5,2], liens:[],
        description:"Choisissez 1 compétence de combat au moment de l'acquisition de ce talent. Ajoutez des dégâts égaux à votre rang de Précision mortelle à un coup d'une attaque réussie utilisant cette compétence."},
-      {id:"a53", talent:"entrainement", nom:"Entraînement", cout:25, type:"passif", classe:false, pos:[5,3], liens:[],
+      {id:"a53", talent:"entrainement", nom:"Entraînement", cout:25, type:"passif", classe:false, pos:[5,3], liens:[], effets:[{carac:"choix", val:1}],
        description:"Vous gagnez +1 dans une caractéristique. Cela ne permet pas d'augmenter une caractéristique au-delà de 6."},
       {id:"a54", talent:"expert-discretion", nom:"Expert en discrétion", cout:25, type:"actif", classe:false, pos:[5,4], liens:[],
        description:"Une fois par round, subissez 2 points de stress pour réduire de 1 la difficulté de votre prochain test de Discrétion ou de Magouilles."}
     ]
   }
 };
+</script>
+
+<!-- ===== ARBRES DES 6 CARRIÈRES DES CONFINS DE L'EMPIRE (17 spécialisations, en plus d'Assassin) =====
+     Les descriptions sont des résumés rédigés pour la fiche (pas le texte du livre) : en cas de doute, le livre fait foi.
+     TT_TALENTS : n = nom, t = 'a' actif / 'p' passif, r = 1 si talent à rangs, d = description ([B] = dé de bonus, [S] = dé d'infortune),
+                  fx = effets chiffrés appliqués à la fiche.
+     TT_DEFS : g = 5 lignes × 4 talents ; H = 5 chaînes de 3 bits (liens case1-2, 2-3, 3-4 de chaque ligne) ;
+               V = 4 chaînes de 4 bits (liens de chaque colonne vers la ligne suivante). Coûts : 5/10/15/20/25. -->
+<script>
+const TT_TALENTS = {
+  "stabilite": {n:"Stabilité", t:"a", r:1, d:"Manœuvre : retirez [S] par rang à votre prochaine action (seulement ceux dus à l'environnement)."},
+  "endurci": {n:"Endurci", t:"p", r:1, d:"Augmentez votre seuil de blessures de +2.", fx:[{stat:"wound", val:2}]},
+  "endurance": {n:"Endurance", t:"p", r:1, d:"Augmentez votre encaissement de +1.", fx:[{stat:"soak", val:1}]},
+  "robustesse": {n:"Robustesse", t:"p", r:1, d:"Augmentez votre seuil de stress de +1.", fx:[{stat:"stress", val:1}]},
+  "entrainement": {n:"Entraînement", t:"p", d:"Vous gagnez +1 dans une caractéristique (6 maximum).", fx:[{carac:"choix", val:1}]},
+  "esquive": {n:"Esquive", t:"a", r:1, d:"Quand un test de combat vous vise, esquivez au prix d'une broutille en subissant du stress (maximum votre rang d'Esquive) : améliorez autant de dés de difficulté du test."},
+  "filature": {n:"Filature", t:"p", r:1, d:"Ajoutez [B] par rang à vos tests de Coordination et de Discrétion."},
+  "coup-eclair": {n:"Coup éclair", t:"p", r:1, d:"Ajoutez [B] par rang à vos tests de combat contre les cibles qui n'ont pas encore agi dans la rencontre."},
+  "coup-mortel": {n:"Coup mortel", t:"p", r:1, d:"Ajoutez +10 par rang aux résultats des blessures critiques que vous infligez."},
+  "precision-mortelle": {n:"Précision mortelle", t:"p", r:1, d:"Choisissez une compétence de combat à l'achat : ajoutez à un coup réussi avec elle des dégâts égaux à votre rang."},
+  "ressort": {n:"Ressort", t:"a", d:"Une fois par round, relevez-vous (même assis ou à terre) au prix d'une broutille."},
+  "arme-en-main": {n:"Arme en main", t:"a", d:"Une fois par round, dégainez ou rengainez une arme, ou sortez/rangez un objet accessible, au prix d'une broutille."},
+  "lecons-anatomie": {n:"Leçons d'anatomie", t:"a", d:"Après une attaque réussie, dépensez 1 Destin pour ajouter des dégâts égaux à votre Intelligence."},
+  "tireur-elite": {n:"Tireur d'élite", t:"a", r:1, d:"Avant une attaque à distance (pas d'arme de jet), manœuvre pour augmenter la portée de 1 niveau par rang ; chaque niveau ajoute 1 dé de difficulté."},
+  "determination": {n:"Détermination", t:"p", r:1, d:"Le stress subi involontairement est réduit de 1 par rang (minimum 1)."},
+  "recuperation-rapide": {n:"Récupération rapide", t:"p", r:1, d:"Après une rencontre, vous éliminez 1 point de stress de plus par rang."},
+  "raccourci": {n:"Raccourci", t:"p", r:1, d:"Lors d'une poursuite, ajoutez [B] par rang aux tests pour rattraper un ennemi ou échapper à vos poursuivants."},
+  "desorientation": {n:"Désorientation", t:"p", r:1, d:"Après avoir touché, dépensez 2 Avantages pour désorienter la cible pendant autant de rounds que votre rang."},
+  "bout-portant": {n:"Bout portant", t:"p", r:1, d:"+1 dégât par rang sur un coup réussi (Distance légères ou lourdes) à portée courte ou au contact."},
+  "garde-strategique": {n:"Garde stratégique", t:"a", r:1, d:"Une fois par round, manœuvre + stress (max. votre rang) : améliorez autant de dés de difficulté des attaques de corps à corps qui vous visent au prochain round."},
+  "esquive-instinctive": {n:"Esquive instinctive", t:"a", r:1, d:"Une fois par round, manœuvre d'Esquive + stress (max. votre rang) : améliorez autant de dés de difficulté des attaques à distance qui vous visent au round suivant."},
+  "tir-barrage": {n:"Tir de barrage", t:"p", r:1, d:"+1 dégât par rang sur un coup réussi d'Artillerie ou de Distance (lourdes) à portée longue ou extrême."},
+  "tete-dure": {n:"Tête dure", t:"a", r:1, d:"Étourdi ou désorienté : action de Tête dure (test de Sang-froid Intimidant) pour vous en défaire ; −1 difficulté par rang supplémentaire."},
+  "tete-dure-am": {n:"Tête dure (amélioré)", t:"a", d:"Neutralisé par dépassement du seuil de stress : une action de Tête dure plus difficile ramène votre stress à 1 sous le seuil."},
+  "dur-au-mal": {n:"Dur au mal", t:"p", r:1, d:"Réduisez de 10 par rang un résultat de blessure critique (minimum 1)."},
+  "garde-du-corps": {n:"Garde du corps", t:"a", r:1, d:"Une fois par round, manœuvre pour protéger un personnage au contact (stress max. votre rang) : améliorez les dés de difficulté des attaques qui le visent jusqu'à votre prochain tour."},
+  "intimidant": {n:"Intimidant", t:"a", r:1, d:"Subissez du stress (max. votre rang) pour réduire la difficulté de vos tests de Coercion, ou l'augmenter pour ceux qui vous visent."},
+  "jamais-a-court": {n:"Jamais à court", t:"p", d:"Vous ne pouvez pas tomber à court de munitions à cause d'un Désastre ; Munitions limitées reste normal."},
+  "bidouillage": {n:"Bidouillage", t:"p", r:1, d:"Choisissez une arme, armure ou un objet : il reçoit une amélioration permanente tant que vous l'utilisez."},
+  "maitre-armures": {n:"Maître des armures", t:"p", d:"Quand vous portez une armure, votre encaissement total augmente de 1.", fx:[{stat:"soak", val:1, cond:"armure"}]},
+  "maitre-armures-am": {n:"Maître des armures (amélioré)", t:"p", d:"Armure d'encaissement 2 ou plus portée : votre défense augmente de 1.", fx:[{stat:"defR", val:1, cond:"armure2"}, {stat:"defM", val:1, cond:"armure2"}]},
+  "brute-nee": {n:"Brute-née", t:"a", d:"Une fois par séance, relancez un test de Coercion ou de Système D."},
+  "coup-assommant": {n:"Coup assommant", t:"a", d:"En Corps à corps, vous pouvez infliger des dégâts de stress au lieu de blessures (l'encaissement s'applique)."},
+  "coup-assommant-am": {n:"Coup assommant (amélioré)", t:"a", d:"Dégâts de stress en Corps à corps ou Pugilat : dépensez des Triomphes pour étourdir la cible 1 round par Triomphe."},
+  "customisation": {n:"Customisation", t:"p", r:1, d:"Ajoutez 1 emplacement à autant d'objets que votre rang ; chaque objet une seule fois."},
+  "coup-handicapant": {n:"Coup handicapant", t:"a", d:"+1 difficulté à votre prochain test de combat ; s'il inflige des dégâts, la cible subit 1 stress à chaque déplacement jusqu'à la fin de la rencontre."},
+  "subsistance": {n:"Subsistance", t:"p", r:1, d:"Retirez jusqu'à 2 [S] aux tests de Survie pour trouver nourriture, eau ou abri ; ces tests durent deux fois moins longtemps."},
+  "baroudeur": {n:"Baroudeur", t:"p", r:1, d:"Retirez [S] par rang aux tests de déplacement au sol ou contre l'environnement ; voyage terrestre deux fois plus court."},
+  "pisteur": {n:"Pisteur chevronné", t:"p", r:1, d:"Retirez [S] par rang aux tests pour suivre ou trouver des traces ; temps de pistage divisé par deux."},
+  "vivacite": {n:"Vivacité", t:"p", d:"Vous ne subissez pas les malus habituels de déplacement en terrain difficile."},
+  "chasseur": {n:"Chasseur", t:"p", r:1, d:"Ajoutez [B] par rang contre les bêtes sauvages et animaux (combat compris) et +10 par rang à leurs critiques."},
+  "point-faible": {n:"Point faible", t:"a", d:"Après une attaque réussie, dépensez 1 Destin pour ajouter des dégâts égaux à votre Ruse."},
+  "baroudeur-ne": {n:"Baroudeur-né", t:"a", d:"Une fois par partie, relancez un test de Résistance ou de Survie."},
+  "antitoxine": {n:"Antitoxine", t:"p", r:1, d:"Ajoutez [B] par rang aux tests contre poisons et toxines ; durée des poisons −1 round par rang (minimum 1)."},
+  "resistance-heroique": {n:"Résistance héroïque", t:"a", d:"Dépensez 1 Destin pour ignorer les effets des blessures critiques sur les tests de Vigueur et d'Agilité jusqu'à la fin de la rencontre."},
+  "chirurgien": {n:"Chirurgien", t:"p", r:1, d:"Un patient soigné par votre test de Médecine élimine 1 blessure de plus par rang."},
+  "specialiste-bacta": {n:"Spécialiste du bacta", t:"p", r:1, d:"En cuve à bacta ou centre de soins, les patients éliminent 1 blessure de plus par rang."},
+  "dose-stimulant": {n:"Dose de stimulant", t:"a", d:"Action : test de Médecine Moyen ; si réussi, un allié au contact gagne +1 à une caractéristique jusqu'à la fin de la rencontre et subit 4 stress."},
+  "dose-stimulant-am": {n:"Dose de stimulant (amélioré)", t:"a", d:"Votre test de Médecine devient Difficile (3 dés) mais l'allié ne subit que 1 stress."},
+  "dose-stimulant-ult": {n:"Dose de stimulant (ultime)", t:"p", d:"Chaque Triomphe dépensé sur Dose de stimulant augmente une caractéristique supplémentaire de 1."},
+  "points-nevralgiques": {n:"Points névralgiques", t:"a", d:"Test de Pugilat contre un adversaire : infligez du stress au lieu de blessures, +1 par rang de Médecine (ignore l'encaissement)."},
+  "medecin-ne": {n:"Médecin-né", t:"a", d:"Une fois par partie, relancez un test de Médecine."},
+  "expert-medecine": {n:"Expert en médecine", t:"a", d:"Une fois par round, subissez 2 stress pour retirer 1 dé de difficulté à un test de Médecine."},
+  "irresistible": {n:"Irrésistible", t:"p", r:1, d:"Retirez [S] par rang à vos tests de Charme et de Commandement."},
+  "benefice-doute": {n:"Bénéfice du doute", t:"p", r:1, d:"Retirez [S] par rang à vos tests de Coercion et de Tromperie."},
+  "sens-rhetorique": {n:"Sens de la rhétorique", t:"a", d:"Action : test de Commandement Moyen ; chaque Avantage permet à un allié à portée courte d'éliminer 1 stress, chaque Triomphe 1 de plus."},
+  "sens-rhetorique-am": {n:"Sens de la rhétorique (amélioré)", t:"p", d:"Les alliés affectés gagnent [B] à tous leurs tests pendant autant de rounds que votre rang en Commandement."},
+  "sens-rhetorique-ult": {n:"Sens de la rhétorique (ultime)", t:"a", d:"Subissez 1 stress pour utiliser Sens de la rhétorique en manœuvre au lieu d'une action."},
+  "repartie-caustique": {n:"Repartie caustique", t:"a", d:"Action : test de Coercion Moyen ; chaque Avantage inflige 1 stress à un ennemi à portée courte, chaque Triomphe 1 de plus."},
+  "repartie-caustique-am": {n:"Repartie caustique (amélioré)", t:"p", d:"Les ennemis affectés subissent [S] à tous leurs tests pendant autant de rounds que votre rang en Coercion."},
+  "repartie-caustique-ult": {n:"Repartie caustique (ultime)", t:"a", d:"Subissez 1 stress pour utiliser Repartie caustique en manœuvre au lieu d'une action."},
+  "accompli": {n:"Accompli", t:"p", d:"Choisissez 2 compétences : elles deviennent à jamais des compétences de carrière."},
+  "perspicace": {n:"Perspicace", t:"p", r:1, d:"Améliorez 1 dé de difficulté par rang aux tests de Charme, Coercion ou Tromperie qui vous prennent pour cible."},
+  "nerfs-acier": {n:"Nerfs d'acier", t:"a", d:"Dépensez 1 Destin pour ignorer les effets des blessures critiques sur vos tests de Présence et de Volonté jusqu'à la fin de la rencontre."},
+  "charmeur-ne": {n:"Charmeur-né", t:"a", d:"Une fois par séance, relancez un test de Charme ou de Tromperie."},
+  "presence-saisissante": {n:"Présence saisissante", t:"a", d:"Dépensez 1 Destin pour éliminer autant de stress que votre Présence."},
+  "erudit-reconnu": {n:"Érudit reconnu", t:"p", r:1, d:"Dégradez 1 dé de difficulté par rang lors des tests avec des institutions académiques."},
+  "langage-binaire": {n:"Langage binaire", t:"p", r:1, d:"Quand vous donnez des ordres à des droïdes PNJ, ajoutez [B] par rang à leurs tests."},
+  "chercheur": {n:"Chercheur", t:"p", r:1, d:"Retirez [S] par rang à vos tests de Connaissance ; les recherches prennent deux fois moins de temps."},
+  "craqueur-codes": {n:"Craqueur de codes", t:"p", r:1, d:"Retirez [S] par rang et 1 dé de difficulté aux tests pour percer un code ou décrypter des communications."},
+  "connaissances-specialisees": {n:"Connaissances spécialisées", t:"p", r:1, d:"Choisissez une compétence de Connaissance : en la testant, dépensez 1 Triomphe pour obtenir des succès supplémentaires égaux à votre rang."},
+  "erudit-ne": {n:"Érudit-né", t:"a", d:"Une fois par partie, relancez un test de Connaissance."},
+  "concentration-intense": {n:"Concentration intense", t:"a", d:"Manœuvre : subissez 1 stress pour améliorer 1 dé de votre prochain test de compétence."},
+  "aplomb": {n:"Aplomb", t:"p", r:1, d:"Retirez 1 dé de difficulté par rang aux tests de Sang-froid pour éviter la peur."},
+  "trait-genie": {n:"Trait de génie", t:"a", d:"Une fois par séance, faites un test de compétence avec votre Intelligence au lieu de la caractéristique habituelle."},
+  "forteresse-mentale": {n:"Forteresse mentale", t:"a", d:"Dépensez 1 Destin pour ignorer les effets des blessures critiques sur vos tests d'Intelligence et de Ruse jusqu'à la fin de la rencontre."},
+  "en-selle": {n:"En selle !", t:"a", d:"Une fois par round, montez/descendez d'un véhicule ou d'une monture, ou installez-vous aux commandes, au prix d'une broutille."},
+  "chasseur-ne": {n:"Chasseur-né", t:"a", d:"Une fois par partie, relancez un test de Perception ou de Vigilance."},
+  "habitue-systemes": {n:"Habitué des systèmes solaires", t:"a", d:"Une fois par partie, manœuvre spéciale : test de Connaissance (Bordure ou Noyau) Difficile pour révéler le type d'environnement d'une planète et des infos utiles."},
+  "vigilance-accrue": {n:"Vigilance accrue", t:"p", d:"Les alliés à portée courte ajoutent [B] à leurs tests de Perception et de Vigilance (2 [B] pour ceux au contact)."},
+  "ceinture-gadgets": {n:"Ceinture à gadgets", t:"a", d:"Dépensez 1 Destin : sortez d'une ceinture ou sacoche, au prix d'une broutille, un objet ou une arme absent de votre liste d'équipement (sous restrictions)."},
+  "cartographie-galaxie": {n:"Cartographie de la galaxie", t:"p", r:1, d:"Retirez [S] par rang aux tests d'Astrogation, qui prennent deux fois moins de temps."},
+  "degourdi": {n:"Dégourdi", t:"p", r:1, d:"Retirez [S] par rang à vos tests de Connaissance (Pègre) et de Système D."},
+  "pilote-chevronne": {n:"Pilote chevronné", t:"p", r:1, d:"Retirez [S] par rang à vos tests de Pilotage (Planétaire) et (Espace)."},
+  "expert-stellaire": {n:"Expert stellaire", t:"a", d:"Une fois par round, subissez 2 stress pour retirer 1 dé de difficulté à votre prochain test d'Astrogation (minimum Facile)."},
+  "conduite-strategique": {n:"Conduite stratégique", t:"p", r:1, d:"Augmentez de 1 par rang la défense du véhicule ou vaisseau que vous pilotez."},
+  "renversement": {n:"Renversement", t:"p", d:"Après avoir touché au corps à corps, dépensez 1 Triomphe pour jeter la cible à terre."},
+  "pleins-gaz": {n:"Pleins gaz", t:"a", d:"Action : test de Pilotage Difficile pour augmenter de 1 la vitesse maximale du vaisseau pendant autant de rounds que votre Ruse."},
+  "pleins-gaz-am": {n:"Pleins gaz (amélioré)", t:"a", d:"Subissez 1 stress pour tenter Pleins gaz au prix d'une manœuvre, difficulté Moyenne."},
+  "pleins-gaz-ult": {n:"Pleins gaz (ultime)", t:"p", d:"Avec Pleins gaz, la vitesse maximale augmente de 2 au lieu de 1."},
+  "dans-le-mille": {n:"Dans le mille", t:"a", d:"Dépensez 1 Destin pour ajouter des dégâts égaux à la moitié de votre Agilité (arrondie au supérieur) à un coup d'arme de véhicule réussi."},
+  "dans-le-mille-am": {n:"Dans le mille (amélioré)", t:"a", d:"Comme Dans le mille, mais avec des dégâts égaux à votre Agilité."},
+  "pilote-ne": {n:"Pilote-né", t:"a", d:"Une fois par partie, relancez un test de Pilotage (Espace) ou d'Artillerie."},
+  "difficile-a-viser": {n:"Difficile à viser", t:"p", d:"Votre véhicule ou vaisseau compte comme ayant 1 point de gabarit de moins quand il est attaqué."},
+  "expert-pilotage": {n:"Expert en pilotage", t:"a", d:"Une fois par round, aux commandes d'un vaisseau, subissez 2 stress pour accomplir n'importe quelle action au prix d'une manœuvre."},
+  "as-manoeuvre": {n:"As de la manœuvre", t:"a", d:"Une fois par rencontre, test opposé de Pilotage pour empêcher un adversaire de vous attaquer pendant autant de rounds que votre Agilité."},
+  "attaque-furieuse": {n:"Attaque furieuse", t:"a", r:1, d:"Test de Corps à corps ou Pugilat : subissez du stress (max. votre rang) pour améliorer autant de dés de votre attaque."},
+  "force-surhumaine": {n:"Force surhumaine", t:"p", r:1, d:"+1 dégât par rang sur un coup réussi de Corps à corps ou de Pugilat."},
+  "bagarreur-ne": {n:"Bagarreur-né", t:"a", d:"Une fois par partie, relancez un test de Pugilat ou de Corps à corps."},
+  "autorite-naturelle": {n:"Autorité naturelle", t:"p", r:1, d:"Ajoutez [B] par rang à vos tests de Commandement ; les cibles ajoutent [S] à leurs tests de Sang-froid pendant 24 h."},
+  "second-souffle": {n:"Second souffle", t:"a", r:1, d:"Une fois par rencontre, au prix d'une broutille, éliminez autant de stress que votre rang."},
+  "muscle": {n:"Muscle", t:"p", d:"Les armes de jet comptent comme ayant 1 niveau de portée de plus."},
+  "officier-superieur": {n:"Officier supérieur", t:"a", d:"Action : test de Commandement Moyen ; autant d'alliés que votre Présence font 1 manœuvre immédiate en subissant 1 stress."},
+  "officier-superieur-am": {n:"Officier supérieur (amélioré)", t:"p", d:"L'action affecte 2 × votre Présence alliés ; 1 Triomphe permet à des alliés (1 stress) de faire une action gratuite à la place."},
+  "tireur-ne": {n:"Tireur-né", t:"a", d:"Une fois par partie, relancez un test de Distance (légères) ou (lourdes)."},
+  "visee-juste": {n:"Visée juste", t:"a", r:1, d:"Une fois par round, manœuvre de Visée juste : tous les bénéfices de viser, et améliorez 1 dé du test par rang."},
+  "relations": {n:"Relations", t:"a", r:1, d:"Une fois par séance, en achetant un objet légal, réduisez sa rareté de 1 par rang."},
+  "persuasion": {n:"Persuasion", t:"p", r:1, d:"Retirez [S] par rang à vos tests de Magouilles et de Tromperie."},
+  "sens-affaires": {n:"Sens des affaires", t:"p", r:1, d:"En vendant légalement, gagnez 10 % de crédits de plus par rang."},
+  "beau-parleur": {n:"Beau parleur", t:"a", r:1, d:"Choisissez Charme, Coercion, Négociation ou Tromperie : avec elle, dépensez 1 Triomphe pour des succès supplémentaires égaux à votre rang."},
+  "contacts-marche-noir": {n:"Contacts au marché noir", t:"a", r:1, d:"En achetant des biens illégaux, réduisez la rareté de 1 par rang ; le prix augmente de 50 % du prix de base par réduction."},
+  "negociateur-ne": {n:"Négociateur-né", t:"a", d:"Une fois par partie, relancez un test de Négociation ou de Calme."},
+  "expert-commerce": {n:"Expert en commerce", t:"a", d:"En vendant ou achetant, subissez 2 stress pour vendre 25 % plus cher ou acheter 25 % moins cher, ou rembourser 1 Obligation de plus / en subir 1 de moins."},
+  "reaction-eclair": {n:"Réaction éclair", t:"a", r:1, d:"Subissez du stress (max. votre rang) pour ajouter autant de succès à un test d'initiative."},
+  "compartiment-cache": {n:"Compartiment caché", t:"p", r:1, d:"Un de vos équipements ou véhicules a des compartiments cachés dont l'encombrement total égale vos rangs."},
+  "quelconque": {n:"Quelconque", t:"p", r:1, d:"Améliorez 1 dé de difficulté par rang aux tests visant à vous identifier."},
+  "systemes-securite": {n:"Systèmes de sécurité", t:"p", r:1, d:"Retirez [S] par rang aux tests pour déconnecter un système de sécurité ou ouvrir une porte verrouillée."},
+  "voyou-ne": {n:"Voyou-né", t:"a", d:"Une fois par séance, relancez un test de Magouilles ou de Discrétion."},
+  "expert-discretion": {n:"Expert en discrétion", t:"a", d:"Une fois par round, subissez 2 stress pour retirer 1 dé de difficulté à votre prochain test de Discrétion ou de Magouilles."},
+  "as-mecanique": {n:"As de la mécanique", t:"p", r:1, d:"Retirez [S] par rang à vos tests de Mécanique ; l'ajout de mods sur les kits coûte moitié moins de crédits."},
+  "mecanicien-precision": {n:"Mécanicien de précision", t:"p", r:1, d:"Quand vous éliminez le stress mécanique d'un véhicule ou vaisseau, supprimez-en 1 de plus par rang."},
+  "reparations-solides": {n:"Réparations solides", t:"p", r:1, d:"En réparant un véhicule ou vaisseau, vous restaurez 1 dégât de coque de plus par rang."},
+  "depannage-recup": {n:"Dépannage de récup'", t:"a", d:"Une fois par séance, action : test de Mécanique Facile pour récupérer des pièces sur un appareil en état de marche afin d'en réparer un autre."},
+  "defaut-motivateur": {n:"Défaut de motivateur", t:"a", d:"Une fois par partie, action : test de Mécanique Difficile pour qu'un appareil visé tombe en panne sur-le-champ."},
+  "bricoleur": {n:"Bricoleur", t:"a", d:"Une fois par partie, action : test de Mécanique Difficile pour fabriquer, avec outils et pièces disponibles, un appareil répondant à un problème actuel."},
+  "bidouilleur-ne": {n:"Bidouilleur-né", t:"a", d:"Une fois par séance, relancez un test de Mécanique."},
+  "degats-superficiels": {n:"Dégâts superficiels", t:"a", d:"Dépensez 1 Destin, au prix d'une broutille, juste après qu'un véhicule subit des dégâts : transformez-les en stress mécanique."},
+  "utinni": {n:"Utinni !", t:"p", r:1, d:"Retirez [S] par rang aux tests pour trouver ou récupérer objets et équipement ; ces tests durent deux fois moins longtemps."},
+  "inventeur": {n:"Inventeur", t:"p", r:1, d:"En fabriquant ou modifiant des kits, ajoutez [B] ou retirez [S] par rang."},
+  "schemas-connus": {n:"Schémas connus", t:"a", d:"Une fois par partie, manœuvre : test de Connaissance (Éducation) Difficile ; une réussite signifie que vous connaissez le plan d'un bâtiment ou d'un vaisseau."},
+  "genie-informatique": {n:"Génie de l'informatique", t:"p", r:1, d:"Par rang, réduisez de 25 % le temps nécessaire pour une tâche d'Informatique."},
+  "slicer-strategique": {n:"Slicer stratégique", t:"p", r:1, d:"Quand vous défendez un système informatique, ajoutez [S] par rang aux tests de votre adversaire."},
+  "slicer-strategique-am": {n:"Slicer stratégique (amélioré)", t:"p", d:"Améliorez 1 dé de difficulté de vos adversaires par rang de Slicer stratégique ; remplace les bénéfices habituels."},
+  "programmeur-ne": {n:"Programmeur-né", t:"a", d:"Une fois par séance, relancez un test d'Informatique ou d'Astrogation."},
+  "slicer-chevronne": {n:"Slicer chevronné", t:"a", d:"En test d'Informatique, dépensez 1 Triomphe pour faire les tests suivants sur le même système au prix de manœuvres."},
+  "expert-slicer": {n:"Expert slicer", t:"a", d:"Une fois par round, au prix d'une broutille, subissez 2 stress pour retirer 1 dé de difficulté à un test d'Informatique ou de piratage (minimum Facile)."}
+};
+
+const TT_SK = {"pugilat":"Pugilat","coercition":"Coercion","mecanique":"Mécanique","distance-legeres":"Distance (Armes légères)","distance-lourdes":"Distance (Armes lourdes)","xenologie":"Connaissance (Xénologie)","perception":"Perception","resistance":"Résistance","survie":"Survie","calme":"Calme","education":"Connaissance (Éducation)","medecine":"Médecine","charme":"Charme","mondes-du-noyau":"Connaissance (Mondes du Noyau)","tromperie":"Tromperie","bordure-exterieure":"Connaissance (Bordure Extérieure)","pegres":"Connaissance (Pègre)","athletisme":"Athlétisme","pilotage-planetaire":"Pilotage (Planétaire)","astrogation":"Astrogation","coordination":"Coordination","negociation":"Négociation","systeme-d":"Système D","artillerie":"Artillerie","commandement":"Commandement","sang-froid":"Sang-froid","corps-a-corps":"Corps à corps","magouilles":"Magouilles","discretion":"Discrétion","informatique":"Informatique","pilotage-espace":"Pilotage (Espace)","vigilance":"Vigilance","culture":"Connaissance (Culture)"};
+
+const TT_DEFS = [
+  {cle:"gadgets", nom:"Expert en gadgets", car:"Chasseur de primes", sk:["pugilat","coercition","mecanique","distance-legeres"],
+   g:[["stabilite","endurci","intimidant","garde-strategique"],["jamais-a-court","bidouillage","bout-portant","desorientation"],["endurci","maitre-armures","brute-nee","coup-assommant"],["bidouillage","customisation","precision-mortelle","coup-assommant-am"],["intimidant","entrainement","maitre-armures-am","coup-handicapant"]],
+   H:["000","110","110","110","110"], V:["0101","0101","0101","0101"]},
+  {cle:"survie", nom:"Expert en survie", car:"Chasseur de primes", sk:["xenologie","perception","resistance","survie"],
+   g:[["subsistance","filature","baroudeur","pisteur"],["baroudeur","vivacite","chasseur","point-faible"],["endurci","pisteur","filature","baroudeur-ne"],["endurci","chasseur","pisteur","antitoxine"],["endurance","entrainement","robustesse","resistance-heroique"]],
+   H:["000","111","001","000","110"], V:["1110","1111","1111","1011"]},
+  {cle:"medecin", nom:"Médecin", car:"Colon", sk:["calme","education","medecine","resistance"],
+   g:[["chirurgien","specialiste-bacta","robustesse","determination"],["dose-stimulant","robustesse","chirurgien","determination"],["chirurgien","robustesse","specialiste-bacta","points-nevralgiques"],["dose-stimulant-am","medecin-ne","endurci","lecons-anatomie"],["dose-stimulant-ult","expert-medecine","entrainement","esquive"]],
+   H:["000","111","110","000","110"], V:["1010","1011","1111","1111"]},
+  {cle:"diplomate", nom:"Diplomate", car:"Colon", sk:["charme","coercition","mondes-du-noyau","tromperie"],
+   g:[["irresistible","robustesse","benefice-doute","endurci"],["sens-rhetorique","irresistible","repartie-caustique","benefice-doute"],["esquive","sens-rhetorique-am","repartie-caustique-am","accompli"],["robustesse","sens-rhetorique-ult","repartie-caustique-ult","perspicace"],["nerfs-acier","entrainement","charmeur-ne","presence-saisissante"]],
+   H:["000","101","101","000","111"], V:["1111","1001","1111","1001"]},
+  {cle:"erudit", nom:"Érudit", car:"Colon", sk:["bordure-exterieure","pegres","xenologie","perception"],
+   g:[["erudit-reconnu","langage-binaire","robustesse","stabilite"],["chercheur","erudit-reconnu","determination","chercheur"],["craqueur-codes","connaissances-specialisees","erudit-ne","accompli"],["connaissances-specialisees","concentration-intense","aplomb","determination"],["trait-genie","forteresse-mentale","entrainement","endurci"]],
+   H:["000","101","101","101","110"], V:["1111","1001","0110","1001"]},
+  {cle:"eclaireur", nom:"Éclaireur", car:"Explorateur", sk:["athletisme","medecine","pilotage-planetaire","survie"],
+   g:[["recuperation-rapide","filature","robustesse","raccourci"],["subsistance","coup-eclair","en-selle","desorientation"],["recuperation-rapide","chasseur-ne","habitue-systemes","raccourci"],["robustesse","vigilance-accrue","endurci","coup-eclair"],["ceinture-gadgets","entrainement","filature","desorientation"]],
+   H:["000","111","000","000","110"], V:["1111","1111","1111","1011"]},
+  {cle:"garde-du-corps", nom:"Garde du corps", car:"Mercenaire", sk:["artillerie","distance-lourdes","perception","pilotage-planetaire"],
+   g:[["endurci","tir-barrage","dur-au-mal","robustesse"],["garde-du-corps","tete-dure","tir-barrage","stabilite"],["garde-du-corps","esquive-instinctive","garde-strategique","stabilite"],["endurance","esquive-instinctive","garde-strategique","tete-dure"],["entrainement","tir-barrage","endurci","tete-dure-am"]],
+   H:["000","111","010","011","110"], V:["0010","1111","1110","0111"]},
+  {cle:"bourlingueur", nom:"Bourlingueur", car:"Explorateur", sk:["astrogation","coordination","negociation","systeme-d"],
+   g:[["cartographie-galaxie","degourdi","recuperation-rapide","degourdi"],["pilote-chevronne","cartographie-galaxie","robustesse","endurci"],["expert-stellaire","conduite-strategique","recuperation-rapide","dur-au-mal"],["recuperation-rapide","ressort","robustesse","renversement"],["entrainement","endurci","esquive","esquive"]],
+   H:["000","101","100","110","101"], V:["1011","1111","0011","1101"]},
+  {cle:"pilote", nom:"Pilote", car:"Contrebandier", sk:["astrogation","artillerie","pilotage-planetaire","pilotage-espace"],
+   g:[["pleins-gaz","pilote-chevronne","cartographie-galaxie","en-selle"],["pilote-chevronne","dans-le-mille","cartographie-galaxie","recuperation-rapide"],["pleins-gaz-am","dans-le-mille-am","robustesse","pilote-ne"],["robustesse","pleins-gaz-ult","difficile-a-viser","conduite-strategique"],["expert-pilotage","entrainement","endurci","as-manoeuvre"]],
+   H:["000","101","001","100","011"], V:["1111","1111","1011","1011"]},
+  {cle:"maraudeur", nom:"Maraudeur", car:"Mercenaire", sk:["coercition","corps-a-corps","resistance","survie"],
+   g:[["endurci","attaque-furieuse","force-surhumaine","coup-mortel"],["force-surhumaine","endurci","resistance-heroique","renversement"],["endurance","coup-mortel","endurci","attaque-furieuse"],["endurci","force-surhumaine","bagarreur-ne","coup-mortel"],["attaque-furieuse","endurance","garde-strategique","entrainement"]],
+   H:["000","111","111","111","111"], V:["1111","0100","1001","0110"]},
+  {cle:"soldat-a-louer", nom:"Soldat à louer", car:"Mercenaire", sk:["artillerie","commandement","distance-lourdes","sang-froid"],
+   g:[["autorite-naturelle","second-souffle","bout-portant","esquive-instinctive"],["second-souffle","aplomb","muscle","bout-portant"],["officier-superieur","autorite-naturelle","tireur-ne","tireur-elite"],["officier-superieur-am","robustesse","endurci","coup-mortel"],["precision-mortelle","visee-juste","entrainement","visee-juste"]],
+   H:["000","101","111","001","111"], V:["1111","1110","1111","0101"]},
+  {cle:"negociant", nom:"Négociant", car:"Explorateur", ovr:{"51":"Une fois par partie, en achetant un objet légal, réduisez sa rareté de 1 par rang."}, sk:["mondes-du-noyau","pegres","negociation","tromperie"],
+   g:[["relations","persuasion","sens-affaires","beau-parleur"],["sens-affaires","robustesse","jamais-a-court","endurci"],["relations","perspicace","beau-parleur","perspicace"],["sens-affaires","nerfs-acier","contacts-marche-noir","contacts-marche-noir"],["relations","negociateur-ne","entrainement","expert-commerce"]],
+   H:["000","111","111","111","111"], V:["1000","1000","1000","1000"]},
+  {cle:"vaurien", nom:"Vaurien", car:"Contrebandier", sk:["calme","charme","distance-legeres","tromperie"],
+   g:[["contacts-marche-noir","persuasion","arme-en-main","reaction-eclair"],["persuasion","contacts-marche-noir","persuasion","coup-eclair"],["compartiment-cache","endurci","contacts-marche-noir","esquive-instinctive"],["endurci","reaction-eclair","compartiment-cache","esquive-instinctive"],["entrainement","charmeur-ne","point-faible","coup-eclair"]],
+   H:["000","010","010","010","111"], V:["1001","1111","1011","1111"]},
+  {cle:"mecanicien", nom:"Mécanicien", car:"Technicien", sk:["magouilles","mecanique","pilotage-espace","pugilat"],
+   g:[["as-mecanique","endurci","mecanicien-precision","reparations-solides"],["depannage-recup","reparations-solides","as-mecanique","robustesse"],["reparations-solides","endurance","defaut-motivateur","endurci"],["bricoleur","reparations-solides","mecanicien-precision","tete-dure"],["bidouilleur-ne","degats-superficiels","entrainement","tete-dure-am"]],
+   H:["000","111","111","110","000"], V:["1111","1111","1111","1111"]},
+  {cle:"voleur", nom:"Voleur", car:"Contrebandier", sk:["discretion","informatique","magouilles","vigilance"],
+   g:[["degourdi","contacts-marche-noir","quelconque","systemes-securite"],["contacts-marche-noir","esquive","robustesse","compartiment-cache"],["filature","robustesse","reaction-eclair","raccourci"],["systemes-securite","voyou-ne","degourdi","ressort"],["expert-discretion","esquive","quelconque","entrainement"]],
+   H:["000","111","111","011","010"], V:["1001","1111","1111","1111"]},
+  {cle:"tech-hors-la-loi", nom:"Tech hors-la-loi", car:"Technicien", sk:["education","pegres","mecanique","systeme-d"],
+   g:[["customisation","utinni","langage-binaire","customisation"],["reparations-solides","robustesse","utinni","endurci"],["ceinture-gadgets","esquive-instinctive","stabilite","garde-strategique"],["bidouillage","langage-binaire","inventeur","bidouillage"],["inventeur","entrainement","schemas-connus","stabilite"]],
+   H:["000","111","111","110","101"], V:["1111","1111","1111","1011"]},
+  {cle:"slicer", nom:"Slicer", car:"Technicien", sk:["education","pegres","discretion","informatique"],
+   g:[["craqueur-codes","robustesse","genie-informatique","systemes-securite"],["slicer-strategique","genie-informatique","robustesse","systemes-securite"],["programmeur-ne","systemes-securite","slicer-strategique","robustesse"],["slicer-strategique","slicer-strategique-am","craqueur-codes","determination"],["slicer-chevronne","expert-slicer","forteresse-mentale","entrainement"]],
+   H:["000","011","011","111","111"], V:["1001","1111","1111","1111"]}
+];
+
+/* Construction des arbres à partir de TT_DEFS (les liens sont lus sur les photos : à vérifier en jeu) */
+(function () {
+  const COST = [5, 10, 15, 20, 25];
+  TT_DEFS.forEach(def => {
+    const id = (r, c) => def.cle + r + c;
+    const talents = [];
+    for (let r = 1; r <= 5; r++) for (let c = 1; c <= 4; c++) {
+      const key = def.g[r - 1][c - 1], T = TT_TALENTS[key];
+      if (!T) throw new Error('Talent inconnu : ' + key + ' (' + def.cle + ')');
+      const liens = [];
+      if (c < 4 && def.H[r - 1][c - 1] === '1') liens.push(id(r, c + 1));
+      if (r < 5 && def.V[r - 1][c - 1] === '1') liens.push(id(r + 1, c));
+      const n = {id: id(r, c), talent: key, nom: T.n, cout: COST[r - 1], type: T.t === 'a' ? 'actif' : 'passif', classe: !!T.r,
+                 pos: [r, c], liens: liens, description: (def.ovr && def.ovr[r + '' + c]) || T.d};
+      if (T.fx) n.effets = T.fx;
+      talents.push(n);
+    }
+    TALENT_TREES[def.cle] = {nom: def.nom, carriere: def.car, edition: "Aux Confins de l'Empire",
+                             competencesBonus: def.sk.map(s => TT_SK[s]), talents: talents};
+  });
+})();
 </script>
 
 <script>
@@ -2296,7 +3336,7 @@ const ttSpent = k => TALENT_TREES[k].talents.filter(n => ttGot(k).includes(n.id)
 const ttAvail = () => parseInt(document.getElementById('xp-disp-val').value) || 0;
 const ttRank = n => TALENT_TREES[ttSpec].talents.filter(m => m.talent === n.talent && ttGot(ttSpec).includes(m.id)).length;
 const ttName = n => n.nom + ' (ligne ' + n.pos[0] + ', col. ' + n.pos[1] + ')';
-const ttDesc = t => t.replace(/\[B\]/g, '<i class="tt-bd"></i>');
+const ttDesc = t => t.replace(/\[B\]/g, '<i class="tt-bd"></i>').replace(/\[S\]/g, '<i class="tt-sd"></i>');
 
 // Appelées par le code existant de la fiche
 function getTreesXP() {
@@ -2304,7 +3344,7 @@ function getTreesXP() {
     Object.keys(talentTrees).forEach(k => { if (TALENT_TREES[k] && Array.isArray(talentTrees[k])) total += ttSpent(k); });
     return total;
 }
-function ttDrop(k) { if (TT_CFG.remboursementRetraitSpec) delete talentTrees[k]; }
+function ttDrop(k) { if (TT_CFG.remboursementRetraitSpec) { delete talentTrees[k]; delete talentChoices[k]; } }
 
 // Règle d'achat : 1re ligne, ou case reliée à une case déjà acquise
 function ttState(n) {
@@ -2382,7 +3422,7 @@ function ttMineHtml(list) {
             return '<div class="tt-c ' + n.type + '"><div class="tt-ch"><b>' + n.nom + '</b>'
                 + (a.c > 1 || n.classe ? '<span class="rk">Rang ' + a.c + '</span>' : '')
                 + '<span class="tt-t ' + n.type + '">' + (n.type === 'actif' ? 'Actif' : 'Passif') + '</span></div>'
-                + '<p>' + ttDesc(n.description) + '</p></div>';
+                + '<p>' + ttDesc(n.description) + '</p>' + ttEffetHtml(n, k) + '</div>';
         };
         const act = order.filter(id => agg[id].n.type === 'actif'), pas = order.filter(id => agg[id].n.type !== 'actif');
         if (act.length) out += '<h4>Actifs</h4>' + act.map(card).join('');
@@ -2401,6 +3441,7 @@ function ttDetail() {
     else why = n.pos[0] === 1 ? 'Accessible : talent de la première ligne.' : 'Accessible : relié à un talent acquis.';
     d.innerHTML = '<div><h2>' + n.nom + ' <span class="tt-t ' + n.type + '">' + (n.type === 'actif' ? 'Actif' : 'Passif') + '</span></h2>'
         + '<p>' + ttDesc(n.description) + '</p>'
+        + ttEffetHtml(n, ttSpec)
         + '<p class="m">Coût : ' + n.cout + ' XP' + (n.classe ? ' · talent à rangs (rang actuel : ' + ttRank(n) + ')' : '') + '</p>'
         + '<p class="w">' + why + '</p></div>'
         + '<button type="button" id="tt-buy"' + (s === 'disponible' ? '' : ' disabled') + '>' + (s === 'acquis' ? 'Acquis' : 'Acheter (' + n.cout + ' XP)') + '</button>';
@@ -2409,10 +3450,38 @@ function ttDetail() {
 
 function ttBuy(id) {
     if (!TT_CFG.achatsEnJeu && currentMode === 'game') { showMessage('Les achats de talents sont désactivés en mode Jeu.'); return; }
-    if (ttState(ttMap(ttSpec).N[id]) !== 'disponible') return;
-    ttGot(ttSpec).push(id);
-    calculateXP();   // recalcule l'XP puis réaffiche les arbres
+    const n = ttMap(ttSpec).N[id], k = ttSpec;
+    if (ttState(n) !== 'disponible') return;
+    const choix = (n.effets || []).find(e => e.carac === 'choix');
+    if (choix) {   // talent à option : +N à une caractéristique au choix (plafond 6)
+        const opts = CARAC_DEFS.filter(c => caracEff(c.k) < 6);
+        if (!opts.length) { showMessage('Toutes vos caractéristiques sont déjà à 6.'); return; }
+        openChoice(n.nom + ' : +' + choix.val + ' à quelle caractéristique ?',
+            opts.map(c => ({ label: c.label + ' (' + caracEff(c.k) + ' → ' + Math.min(6, caracEff(c.k) + choix.val) + ')', value: c.k })),
+            v => ttCommit(k, id, v));
+        return;
+    }
+    ttCommit(k, id, null);
+}
+function ttCommit(k, id, choice) {
+    ttGot(k).push(id);
+    if (choice) { talentChoices[k] = talentChoices[k] || {}; talentChoices[k][id] = choice; }
+    calculateXP();   // recalcule l'XP, la fiche (seuils, dés) puis réaffiche les arbres
     saveAll();
+}
+const TT_STAT_LBL = { soak: 'Encaissement', wound: 'Seuil de blessures', stress: 'Seuil de stress', defR: 'Défense à distance', defM: 'Défense au corps à corps' };
+function ttEffetHtml(n, k) {
+    if (!n.effets || !n.effets.length) return '';
+    const bits = n.effets.map(e => {
+        if (e.stat) return TT_STAT_LBL[e.stat] + ' ' + (e.val < 0 ? '−' : '+') + Math.abs(e.val) + (e.cond === 'armure' ? ' (armure portée)' : e.cond === 'armure2' ? ' (armure d\'encaissement 2+ portée)' : '');
+        if (e.carac === 'choix') {
+            const c = k && talentChoices[k] && talentChoices[k][n.id];
+            const def = c ? CARAC_DEFS.find(x => x.k === c) : null;
+            return def ? def.label + ' +' + e.val : '+' + e.val + ' à une caractéristique au choix';
+        }
+        return '';
+    }).filter(Boolean);
+    return bits.length ? '<p class="fx">Effet sur la fiche : ' + bits.join(', ') + '</p>' : '';
 }
 
 // ---- Zoom et déplacement ----
@@ -2437,7 +3506,7 @@ $t('tt-zm').onclick = () => ttZoom(1 / 1.2, ttVp.clientWidth / 2, ttVp.clientHei
 $t('tt-fit').onclick = ttFit;
 $t('tt-rs').onclick = () => {
     if (!ttSpec) return;
-    askConfirm('Réinitialiser l\'arbre ' + TALENT_TREES[ttSpec].nom + ' ? Les ' + ttSpent(ttSpec) + ' XP dépensés sont rendus.', () => { talentTrees[ttSpec] = []; calculateXP(); saveAll(); });
+    askConfirm('Réinitialiser l\'arbre ' + TALENT_TREES[ttSpec].nom + ' ? Les ' + ttSpent(ttSpec) + ' XP dépensés sont rendus.', () => { talentTrees[ttSpec] = []; delete talentChoices[ttSpec]; calculateXP(); saveAll(); });
 };
 
 // ---- Démarrage ----
