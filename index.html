@@ -308,9 +308,10 @@
         .rank-shape.carriere { background: var(--sw-red-dark); color: #fff; border-radius: 2px; border-color: #4a130f; }
         .rank-shape.specialisation { background: var(--sw-blue-accent); color: #fff; border-radius: 50%; border-color: #3a7d8a; }
 
-        .skill-pool-display { width: 50px; margin-left: 5px; font-size: 1rem; display: flex; gap: 2px; align-items: center; flex-shrink: 0; }
+        .skill-pool-display { width: 50px; min-width: 50px; flex-wrap: wrap; margin-left: 5px; font-size: 1rem; display: flex; gap: 2px; align-items: center; flex-shrink: 0; }
         .die-g { color: #2ecc71; text-shadow: 1px 1px 0 #000; font-weight: bold; }
         .die-y { color: #f1c40f; text-shadow: 1px 1px 0 #000; font-weight: bold; }
+        .die-b { color: #4aa3df; text-shadow: 1px 1px 0 #000; font-weight: bold; }
 
         /* BLOCS GÉNÉRIQUES & FOOTER */
         .section-block { margin-top: 20px; }
@@ -1917,6 +1918,8 @@
             poolDiv.replaceChildren();
             for (let i = 0; i < greenDice; i++) { const die = document.createElement('span'); die.className = 'die-g'; die.textContent = '◊'; poolDiv.appendChild(die); }
             for (let i = 0; i < yellowDice; i++) { const die = document.createElement('span'); die.className = 'die-y'; die.textContent = '⬢'; poolDiv.appendChild(die); }
+            const boostDice = talentBoost(row.getAttribute('data-id'));
+            for (let i = 0; i < boostDice; i++) { const die = document.createElement('span'); die.className = 'die-b'; die.textContent = '■'; die.title = 'Dé de bonus (talent)'; poolDiv.appendChild(die); }
         }
     }
 
@@ -2432,6 +2435,21 @@
     }
     const caracEff = k => Math.min(6, caracBought(k) + caracTalentBonus(k));
 
+    // Dés de bonus (bleus) donnés en permanence par les talents achetés (1 par achat) à une compétence
+    function talentBoost(skillId) {
+        let n = 0;
+        if (typeof TALENT_TREES === 'undefined') return 0;
+        Object.keys(talentTrees).forEach(k => {
+            const tr = TALENT_TREES[k], got = talentTrees[k];
+            if (!tr || !Array.isArray(got)) return;
+            tr.talents.forEach(t => {
+                if (!got.includes(t.id) || !t.effets) return;
+                t.effets.forEach(e => { if (e.boost && e.boost.includes(skillId)) n += 1; });
+            });
+        });
+        return n;
+    }
+
     // Conditions d'effet : 'armure' = une armure (hors bouclier) portée ; 'armure2' = idem avec encaissement 2 ou plus
     function effetCondOk(cond) {
         if (!cond) return true;
@@ -2698,13 +2716,14 @@
         const c = caracEff(row.getAttribute('data-carac'));
         const s = parseInt(row.querySelector('.skill-ranks').getAttribute('data-score')) || 0;
         const total = Math.max(c, s), y = Math.min(c, s);
-        return { g: total - y, y: y };
+        return { g: total - y, y: y, b: talentBoost(id) };
     }
 
-    function fillPool(el, g, y) {
+    function fillPool(el, g, y, b) {
         el.replaceChildren();
         for (let i = 0; i < g; i++) el.appendChild(h('span', 'die-g', '◊'));
         for (let i = 0; i < y; i++) el.appendChild(h('span', 'die-y', '⬢'));
+        for (let i = 0; i < (b || 0); i++) el.appendChild(h('span', 'die-b', '■'));
     }
 
     function pill(label, val, sub, txt) {
@@ -2738,7 +2757,7 @@
         head.appendChild(title);
         const poolEl = h('div', 'gc-pool');
         const p = skillPool(g.comp);
-        if (p) fillPool(poolEl, p.g, p.y);
+        if (p) fillPool(poolEl, p.g, p.y, p.b);
         head.appendChild(poolEl);
         head.appendChild(buildDelButton(g));
         card.appendChild(head);
@@ -3306,6 +3325,18 @@ const TT_DEFS = [
 </script>
 
 <script>
+/* Talents qui ajoutent en permanence un dé de bonus (1 par achat) à des compétences précises.
+   Les bonus conditionnels (poursuite, cibles qui n'ont pas agi, etc.) ne sont volontairement pas ajoutés. */
+const TT_BOOST = {
+  "filature": ["coordination", "discretion"],
+  "autorite-naturelle": ["commandement"]
+};
+Object.keys(TALENT_TREES).forEach(k => TALENT_TREES[k].talents.forEach(n => {
+  if (TT_BOOST[n.talent]) n.effets = (n.effets || []).concat([{boost: TT_BOOST[n.talent]}]);
+}));
+</script>
+
+<script>
 /* ===== MOTEUR DES ARBRES DE TALENTS (aucune donnée de jeu ici ; données dans TALENT_TREES) ===== */
 const TT_CFG = {
     achatsEnJeu: true,                 // false = achats de talents bloqués en mode Jeu
@@ -3473,6 +3504,7 @@ const TT_STAT_LBL = { soak: 'Encaissement', wound: 'Seuil de blessures', stress:
 function ttEffetHtml(n, k) {
     if (!n.effets || !n.effets.length) return '';
     const bits = n.effets.map(e => {
+        if (e.boost) return '+1 dé de bonus (' + e.boost.map(s => TT_SK[s] || s).join(', ') + ')';
         if (e.stat) return TT_STAT_LBL[e.stat] + ' ' + (e.val < 0 ? '−' : '+') + Math.abs(e.val) + (e.cond === 'armure' ? ' (armure portée)' : e.cond === 'armure2' ? ' (armure d\'encaissement 2+ portée)' : '');
         if (e.carac === 'choix') {
             const c = k && talentChoices[k] && talentChoices[k][n.id];
